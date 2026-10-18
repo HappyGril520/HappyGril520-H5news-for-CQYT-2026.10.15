@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>订单之外——新就业形态下的外卖骑手观察</title>
+    <style>
+        :root {
+            --primary-bg: #FAFAFA;
+            --accent-yellow: #FFCD38;
+            --accent-orange: #F59E0B;
+            --text-primary: #1F2937;
+            --text-secondary: #4B5563;
+            --text-muted: #9CA3AF;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow-subtle: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+            --shadow-card: 0 20px 30px -10px rgba(0, 0, 0, 0.08);
+            --radius-md: 16px;
+            --radius-lg: 24px;
+
+            /* 全局默认可控间距变量 */
+            --header-padding-top: 0rem;
+            --header-padding-bottom: 2rem;
+            --header-title-mt: 18vh;
+            --header-title-mb: 1.25rem;
+            
+            --hint-default-mt: 2.5rem;
+            --hint-default-mb: 2.5rem;
+            
+            --block-default-mt: 1.75rem;
+            --block-default-mb: 1.75rem;
+            
+            --media-default-mt: 1.75rem;
+            --media-default-mb: 1.75rem;
+            
+            --btn-default-mt: 1.5rem;
+            --btn-default-mb: 1.5rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            background-color: #E5E7EB;
+        }
+
+        /* 当独立浮窗打开时，禁止页面背景滚动 */
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        /* H5 Shell to simulate phone container on PC, full screen on mobile */
+        .h5-container {
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            background-color: #FFFFFF;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Fixed gradient overlay on bottom 25% of viewport */
+        .bottom-gradient-bg {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            height: 25vh;
+            background: linear-gradient(to bottom, rgba(255, 205, 56, 0) 0%, rgba(255, 205, 56, 0.18) 40%, rgba(255, 205, 56, 0.45) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Header / Cover Section with Background Image and Entry Animation */
+        .header-section {
+            width: 100%;
+            background-image: url('image/14.png');
+            background-position: top left;
+            background-size: 100% auto;
+            background-repeat: no-repeat;
+            padding-top: var(--pt, var(--header-padding-top));
+            padding-bottom: var(--pb, var(--header-padding-bottom));
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            
+            /* 背景缓动入场动画 */
+            animation: headerBgFade 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            will-change: opacity, transform;
+        }
+
+        @keyframes headerBgFade {
+            0% {
+                opacity: 0;
+                transform: scale(1.03);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .main-title {
+            font-size: clamp(3rem, 12vw, 4.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-top: var(--mt, var(--header-title-mt));
+            margin-bottom: var(--mb, var(--header-title-mb));
+            line-height: 1.1;
+
+            /* 大标题上升缓动动画 */
+            animation: titleUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+            opacity: 0;
+            will-change: opacity, transform;
+        }
+
+        .sub-title {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #6B7280;
+            letter-spacing: 0.05em;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 0.75rem;
+
+            /* 副标题上升缓动动画 */
+            animation: titleUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+            opacity: 0;
+            will-change: opacity, transform;
+        }
+
+        @keyframes titleUp {
+            0% {
+                opacity: 0;
+                transform: translate3d(0, 30px, 0);
+            }
+            100% {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        .sub-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background-color: var(--accent-yellow);
+            border-radius: 2px;
+        }
+
+        /* Article Content Stream */
+        .content-body {
+            padding: 0 1.5rem 6rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Scroll reveal animations */
+        .reveal-item {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+
+        .reveal-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Paragraph styles: 居中显示 */
+        .text-line {
+            font-size: 1.05rem;
+            line-height: 1.85;
+            color: var(--text-secondary);
+            margin-bottom: 0.2rem;
+            text-align: center;
+        }
+
+        /* 独立可控间距：文本块组 */
+        .text-block-group {
+            margin-top: var(--mt, var(--block-default-mt));
+            margin-bottom: var(--mb, var(--block-default-mb));
+        }
+
+        /* 独立可控间距：向下滑动提示 */
+        .scroll-down-hint {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: var(--mt, var(--hint-default-mt));
+            margin-bottom: var(--mb, var(--hint-default-mb));
+            color: #9CA3AF;
+            font-size: 0.875rem;
+            letter-spacing: 0.1em;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        .scroll-down-hint span,
+        .scroll-down-hint .arrow {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 上一层透明点击热区罩 (伪元素层级类) */
+        .scroll-down-hint::before {
+            content: '';
+            position: absolute;
+            top: var(--hit-pt, -70px);
+            bottom: var(--hit-pb, -70px);
+            left: -60px;
+            right: -60px;
+            z-index: 10;
+            background: transparent;
+        }
+
+        .scroll-down-hint .arrow {
+            width: 16px;
+            height: 16px;
+            margin-top: 6px;
+            border-right: 2px solid var(--accent-yellow);
+            border-bottom: 2px solid var(--accent-yellow);
+            transform: rotate(45deg);
+            animation: bounce 1.8s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(45deg); }
+            40% { transform: translateY(6px) rotate(45deg); }
+            60% { transform: translateY(3px) rotate(45deg); }
+        }
+
+        /* 圆形蒙版图片组 */
+        .circle-mask-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: var(--mt, 2.5rem);
+            margin-bottom: var(--mb, 1.5rem);
+            padding: 0 0.2rem;
+            gap: 12px;
+        }
+
+        .circle-avatar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            cursor: pointer;
+            transition: transform 0.25s ease;
+        }
+
+        .circle-avatar-item:active {
+            transform: scale(0.95);
+        }
+
+        .circle-avatar {
+            width: 125px;
+            height: 125px;
+            border-radius: 50%;
+            border: 4px solid #FFFFFF;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            position: relative;
+            overflow: hidden;
+            background-color: #F3F4F6;
+        }
+
+        .circle-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .circle-avatar-outer-label {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            letter-spacing: 0.02em;
+            line-height: 1.2;
+        }
+
+        .avatar-click-guide {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #6B7280;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            margin: 0.5rem 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .avatar-click-guide::before,
+        .avatar-click-guide::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 1px;
+            background-color: #D1D5DB;
+        }
+
+        /* 独立可控间距：媒体容器（包含图片18.png）与视频容器 */
+        .media-container-16-9,
+        .video-container-16-9 {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: var(--mt, var(--media-default-mt));
+            margin-bottom: var(--mb, var(--media-default-mb));
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .media-container-16-9 img,
+        .video-container-16-9 video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: var(--radius-md);
+        }
+
+        /* Point 4：就业现象柱状图样式与缓动入场效果 */
+        .chart-card-container {
+            width: 100%;
+            background: #FFFFFF;
+            border-radius: var(--radius-md);
+            padding: 1.5rem 1.25rem 1.25rem;
+            margin-top: var(--mt, var(--media-default-mt));
+            margin-bottom: var(--mb, var(--media-default-mb));
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid #F3F4F6;
+        }
+
+        .chart-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .bar-chart-wrapper {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 180px;
+            padding: 0 10%;
+            border-bottom: 2px solid #E5E7EB;
+            position: relative;
+        }
+
+        .chart-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: flex-end;
+            width: 35%;
+        }
+
+        .bar-value {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .bar-shape {
+            width: 100%;
+            max-width: 50px;
+            border-radius: 6px 6px 0 0;
+            transform-origin: bottom;
+            transform: scaleY(0);
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* 邻近色差分：暖黄与橙黄 */
+        .bar-2025 {
+            height: 70%;
+            background: linear-gradient(180deg, #FFE082 0%, var(--accent-yellow) 100%);
+        }
+
+        .bar-2026 {
+            height: 85%;
+            background: linear-gradient(180deg, #FBBF24 0%, var(--accent-orange) 100%);
+        }
+
+        .chart-card-container.visible .bar-shape {
+            transform: scaleY(1);
+        }
+
+        .x-axis-labels {
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 10% 0;
+        }
+
+        .x-axis-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            width: 35%;
+            text-align: center;
+        }
+
+        .y-axis-unit {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Point 4：更小字号深灰色居左信息提示 */
+        .data-disclaimer-note {
+            font-size: 0.78rem;
+            font-style: italic;
+            color: #4B5563;
+            text-align: left;
+            line-height: 1.5;
+            margin-top: 0.8rem;
+            margin-bottom: var(--mb, var(--block-default-mb));
+            padding: 0 0.2rem;
+        }
+
+        /* 独立可控间距：交互按钮 */
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 0.9rem 1.25rem;
+            margin-top: var(--mt, var(--btn-default-mt));
+            margin-bottom: var(--mb, var(--btn-default-mb));
+            background: #111827;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+            transition: all 0.25s ease;
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+            background: #1F2937;
+        }
+
+        .action-btn .btn-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-yellow);
+        }
+
+        /* 全屏模态弹窗 (Modal) */
+        .standalone-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            -webkit-backface-visibility: hidden;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+            padding: 1.5rem;
+        }
+
+        .standalone-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-popup-card {
+            width: 100%;
+            max-width: 420px;
+            max-height: 80vh;
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            transform: translate3d(0, 24px, 0);
+            will-change: transform, opacity;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .standalone-modal-overlay.active .modal-popup-card {
+            transform: translate3d(0, 0, 0);
+        }
+
+        /* Point 6：小标题调整为居中显示 */
+        .modal-popup-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-bottom: 1px solid #E5E7EB;
+            padding-bottom: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .modal-popup-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .modal-close-icon {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #F3F4F6;
+            border: none;
+            color: #6B7280;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-close-icon:hover {
+            background: #E5E7EB;
+            color: #111827;
+        }
+
+        /* Point 6：替换为顶部带有黄色边框的浮窗项 */
+        .info-card-item {
+            position: relative;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-top: 4px solid var(--accent-yellow);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+        }
+
+        .info-card-item-text {
+            font-size: 0.92rem;
+            line-height: 1.65;
+            color: #374151;
+            text-align: left;
+        }
+
+        /* Modal Overlay for Observation Form */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            width: 88%;
+            max-width: 400px;
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-card);
+            position: relative;
+        }
+
+        .modal-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .modal-textarea {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            resize: none;
+            outline: none;
+            margin-bottom: 1rem;
+            font-family: inherit;
+        }
+
+        .modal-textarea:focus {
+            border-color: var(--accent-yellow);
+        }
+
+        .modal-submit {
+            width: 100%;
+            background: var(--accent-yellow);
+            color: #111827;
+            font-weight: 600;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Simulation Card Box */
+        .sim-box {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            margin: 1rem 0;
+        }
+
+        .sim-step {
+            margin-bottom: 1.25rem;
+        }
+
+        .sim-step:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="h5-container">
+        <!-- Warm yellow transparent gradient at the bottom 25% -->
+        <div class="bottom-gradient-bg"></div>
+
+        <!-- Header Title Section with Background Image and Entry Animation -->
+        <header class="header-section">
+            <h1 class="main-title" style="--mt: 18vh;">订单之外</h1>
+            <div class="sub-title">新就业形态下的外卖骑手观察</div>
+        </header>
+
+        <!-- Article Content -->
+        <main class="content-body">
+
+            <!-- Section 1：第一个向下滑动提示 -->
+            <div class="reveal-item scroll-down-hint" style="--mt: -8.5rem; --mb: 8.5rem;" onclick="scrollToSection2()">
+                <span>↓ 向下滑动阅读</span>
+                <div class="arrow"></div>
+            </div>
+
+            <!-- 第二页（正文起点） -->
+            <div id="section-2" class="text-block-group">
+                <p class="text-line reveal-item">在城市的道路上</p>
+                <p class="text-line reveal-item">有一群人正在以另一种方式工作。</p>
+                <p class="text-line reveal-item">他们不坐在固定的办公室里</p>
+                <p class="text-line reveal-item">也不按传统的朝九晚五打卡。</p>
+                <p class="text-line reveal-item">网约车司机、快递小哥、外卖骑手</p>
+                <p class="text-line reveal-item">他们构成了当下中国规模庞大的灵活就业群体。</p>
+            </div>
+
+            <!-- 圆形蒙版图片组 -->
+            <div class="circle-mask-group reveal-item">
+                <!-- 1. 网约车司机 -->
+                <div class="circle-avatar-item" onclick="openInfoModal('modal-driver')">
+                    <div class="circle-avatar">
+                        <img src="image/2.jpeg" alt="网约车司机">
+                    </div>
+                    <div class="circle-avatar-outer-label">网约车司机</div>
+                </div>
+
+                <!-- 2. 外卖骑手 -->
+                <div class="circle-avatar-item" onclick="openInfoModal('modal-rider')">
+                    <div class="circle-avatar">
+                        <img src="image/4.jpeg" alt="外卖骑手">
+                    </div>
+                    <div class="circle-avatar-outer-label">外卖骑手</div>
+                </div>
+
+                <!-- 3. 快递分拣员 -->
+                <div class="circle-avatar-item" onclick="openInfoModal('modal-courier')">
+                    <div class="circle-avatar">
+                        <img src="image/3.jpeg" alt="快递分拣员">
+                    </div>
+                    <div class="circle-avatar-outer-label">快递分拣员</div>
+                </div>
+            </div>
+
+            <!-- 引导点击文字 -->
+            <div class="reveal-item avatar-click-guide">
+                点击头像查看详情
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">这三种工作都依赖平台派单</p>
+                <p class="text-line reveal-item">收入与完成的订单量直接相关</p>
+                <p class="text-line reveal-item">工作时间相对灵活，却也高度不确定。</p>
+            </div>
+
+            <!-- Section 2 引导下滑 -->
+            <div class="reveal-item scroll-down-hint">
+                <span>↓ 向下滑动阅读</span>
+                <div class="arrow"></div>
+            </div>
+
+            <!-- Point 1：插入图片18.png（3508*1974，16:9）替换原占位符 -->
+            <div class="media-container-16-9 reveal-item">
+                <img src="image/18.png" alt="新就业形态观察">
+            </div>
+
+            <!-- Point 4：替换第三页（Section 2 延续）中的正文文案 -->
+            <div class="text-block-group">
+                <p class="text-line reveal-item" style="font-weight: 700; font-size: 1.15rem; color: var(--text-primary);">新就业形态</p>
+                <p class="text-line reveal-item">一笔外卖订单的产生，始于手机屏幕上的一次点击</p>
+                <p class="text-line reveal-item">但订单抵达消费者之前，还要经过商家的备餐、骑手的取送，以及途中一系列具体的劳动环节。</p>
+                <p class="text-line reveal-item">同样的连接，也发生在出行与物流领域。</p>
+                <p class="text-line reveal-item">网约车平台连接出行需求与司机，外卖平台连接餐饮消费与配送服务，快递分拣则让来自不同方向的包裹完成识别、分类与流转。</p>
+                <p class="text-line reveal-item">平台与物流体系把分散的需求组织起来，也让不同岗位的劳动进入城市日常运行的链条。</p>
+                <p class="text-line reveal-item">三个岗位，面对的是不同的工作现场。</p>
+                <p class="text-line reveal-item">它们并不遵循完全相同的用工方式，却都与当下城市的出行、餐饮和物流需求紧密相连。</p>
+            </div>
+
+            <!-- Point 4：动态柱状图（缓动入场效果，暖黄与橙黄差分） -->
+            <div class="chart-card-container reveal-item">
+                <div class="chart-title">灵活就业，已成为不可忽视的就业现象</div>
+                <div class="bar-chart-wrapper">
+                    <div class="y-axis-unit">单位：亿人</div>
+                    <div class="chart-column">
+                        <div class="bar-value">2.8</div>
+                        <div class="bar-shape bar-2025"></div>
+                    </div>
+                    <div class="chart-column">
+                        <div class="bar-value">3.2</div>
+                        <div class="bar-shape bar-2026"></div>
+                    </div>
+                </div>
+                <div class="x-axis-labels">
+                    <div class="x-axis-label">2025年</div>
+                    <div class="x-axis-label">2026年(预测)</div>
+                </div>
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">数字背后，是越来越多样化的就业选择，也是劳动者与市场需求之间正在发生的连接。</p>
+            </div>
+
+            <!-- Point 4：字号更小的斜体、深灰色、居左信息提示说明 -->
+            <p class="reveal-item data-disclaimer-note">数据说明：以上数字为研究报告中的估算与预测。由于统计口径、样本范围和推算方法存在差异，不宜直接将其与国家统计部门的就业、失业指标进行换算。</p>
+
+            <!-- Section 3 -->
+            <div class="reveal-item scroll-down-hint">
+                <span>↓ 向下滑动阅读</span>
+                <div class="arrow"></div>
+            </div>
+
+            <div class="media-container-16-9 reveal-item">
+                <img src="image/15.jpg" alt="校园观察">
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">平台经济正在改变城市的劳动与生活场景。</p>
+                <p class="text-line reveal-item">外卖不再只是“送到门口”的服务</p>
+                <p class="text-line reveal-item">它连接着商家、消费者，也连接着一种新的劳动方式。</p>
+                <p class="text-line reveal-item">对骑手而言，配送是一份现实的工作</p>
+                <p class="text-line reveal-item">但在订单之外，他们仍拥有自己的生活、问题与选择。</p>
+                <p class="text-line reveal-item">校园是观察这一变化的具体切口。</p>
+                <p class="text-line reveal-item">食堂作为校园传统餐饮的核心载体</p>
+                <p class="text-line reveal-item">品类繁多的档口为师生提供多样选择</p>
+                <p class="text-line reveal-item">传统堂食仍是熟悉的就餐方式</p>
+                <p class="text-line reveal-item">与此同时，校内专属配送队伍正在成型</p>
+                <p class="text-line reveal-item">两类配送在服务场景与运行模式上存在明显差异</p>
+            </div>
+
+            <!-- 视频组件：校园切口特写视频 -->
+            <div class="video-container-16-9 reveal-item">
+                <video poster="image/15.jpg" controls playsinline preload="metadata">
+                    <source src="video/video_01.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+            </div>
+
+            <!-- 触发按钮 -->
+            <button class="action-btn reveal-item" onclick="openInfoModal('modal-info-2')">
+                <span class="btn-icon"></span>
+                <span>校园观察</span>
+            </button>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">校园食堂外卖的推行</p>
+                <p class="text-line reveal-item">是校园餐饮数字化转型的重要实践</p>
+                <p class="text-line reveal-item">它让平台配送进一步渗透进相对封闭的生活场景</p>
+                <p class="text-line reveal-item">也让我们看见新就业形态如何进入具体的日常。</p>
+            </div>
+
+            <button class="action-btn reveal-item" onclick="openInfoModal('modal-info-3')">
+                <span class="btn-icon"></span>
+                <span>{查看相关资料汇总}</span>
+            </button>
+
+            <!-- Section 4 Simulation -->
+            <div class="reveal-item scroll-down-hint">
+                <span>↓ 向下滑动阅读</span>
+                <div class="arrow"></div>
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item" style="font-weight:600; color:var(--text-primary);">先试着体验一次完整的配送过程。</p>
+            </div>
+
+            <button class="action-btn reveal-item" onclick="openInfoModal('modal-info-sim')">
+                <span class="btn-icon"></span>
+                <span>{开始模拟}</span>
+            </button>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item" style="color:var(--text-muted); font-size:0.9rem;">模拟结束。</p>
+                <p class="text-line reveal-item">在真实的工作中</p>
+                <p class="text-line reveal-item">这样的循环可能重复十几次、几十次。</p>
+                <p class="text-line reveal-item">但当最后一个订单完成</p>
+                <p class="text-line reveal-item">系统不再派单</p>
+                <p class="text-line reveal-item">骑手面对的是什么？</p>
+                <p class="text-line reveal-item">工作之外，他们的生活是什么样的？</p>
+            </div>
+
+            <!-- Section 5 Interview -->
+            <div class="reveal-item scroll-down-hint">
+                <span>↓ 向下滑动阅读</span>
+                <div class="arrow"></div>
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">我们访谈了一位外卖骑手。</p>
+                <p class="text-line reveal-item" style="color:var(--text-muted); font-size:0.88rem;">（以下内容根据真实观察与访谈整理，做匿名处理）</p>
+            </div>
+
+            <div class="media-container-16-9 reveal-item">
+                <img src="image/14.png" alt="骑手清晨工作记录">
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">他每天的工作从早上开始，到晚上结束。</p>
+                <p class="text-line reveal-item">中间的时间被一单单分割。</p>
+                <p class="text-line reveal-item">问他如何看待这份工作</p>
+                <p class="text-line reveal-item">他说：“能挣钱，时间相对自由，但很累。”</p>
+            </div>
+
+            <div class="media-container-16-9 reveal-item">
+                <img src="image/15.jpg" alt="订单之外路边休息特写">
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">订单之外的生活</p>
+                <p class="text-line reveal-item">他提到最多的是休息和家庭。</p>
+                <p class="text-line reveal-item">有时候送完单会在路边坐一会儿</p>
+                <p class="text-line reveal-item">有时候直接回家。</p>
+                <p class="text-line reveal-item">家人知道他在跑外卖</p>
+                <p class="text-line reveal-item">但很少细问每天具体发生了什么。</p>
+            </div>
+
+            <div class="media-container-16-9 reveal-item">
+                <img src="image/18.png" alt="骑手对未来说明图像">
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">他谈到过对未来的想法：</p>
+                <p class="text-line reveal-item">“先干着，看看以后有没有别的机会。”</p>
+                <p class="text-line reveal-item">也谈到过身体的感受：</p>
+                <p class="text-line reveal-item">“腿和腰会酸，雨天和高温天更明显。”</p>
+                <p class="text-line reveal-item">这些内容没有出现在任何订单数据里。</p>
+            </div>
+
+            <div class="media-container-16-9 reveal-item">
+                <img src="image/14.png" alt="骑手个人日常片段图像">
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">这是他订单之外的日常片段。</p>
+                <p class="text-line reveal-item">简单、具体，也不完整。</p>
+                <p class="text-line reveal-item">但它属于这个人，而不属于系统。</p>
+            </div>
+
+            <!-- Section 6 Reflection -->
+            <div class="reveal-item scroll-down-hint">
+                <span>↓ 向下滑动阅读</span>
+                <div class="arrow"></div>
+            </div>
+
+            <div class="media-container-16-9 reveal-item">
+                <img src="image/15.jpg" alt="群体视角图像">
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">一个人的经历</p>
+                <p class="text-line reveal-item">是这个群体的一部分。</p>
+                <p class="text-line reveal-item">外卖骑手的数量庞大</p>
+                <p class="text-line reveal-item">他们的工作状态、收入结构、保障情况</p>
+                <p class="text-line reveal-item">已经引起持续关注。</p>
+                <p class="text-line reveal-item">公开研究和调查显示</p>
+                <p class="text-line reveal-item">灵活就业收入多数与订单量挂钩</p>
+                <p class="text-line reveal-item">社会保险参与率相对较低</p>
+                <p class="text-line reveal-item">劳动关系认定仍存在模糊地带。</p>
+                <p class="text-line reveal-item">这些问题不只出现在某一个骑手身上。</p>
+            </div>
+
+            <div class="media-container-16-9 reveal-item">
+                <img src="image/18.png" alt="数据与生活的真实交界图像">
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">订单记录的是效率与完成度</p>
+                <p class="text-line reveal-item">很少记录：休息是否充足</p>
+                <p class="text-line reveal-item">家庭如何安排</p>
+                <p class="text-line reveal-item">对未来有没有规划</p>
+                <p class="text-line reveal-item">身体是否长期透支。</p>
+                <p class="text-line reveal-item">这些被数据遮住的部分</p>
+                <p class="text-line reveal-item">正是“订单之外”想要呈现的内容。</p>
+                <p class="text-line reveal-item">从个人观察走向群体</p>
+                <p class="text-line reveal-item">不是为了得出统一结论</p>
+                <p class="text-line reveal-item">而是让更多人看见：</p>
+                <p class="text-line reveal-item">在平台经济的日常运转里</p>
+                <p class="text-line reveal-item">还有另一层真实存在的生活。</p>
+            </div>
+
+            <!-- Section 7 Ending -->
+            <div class="reveal-item scroll-down-hint">
+                <span>↓ 向下滑动阅读</span>
+                <div class="arrow"></div>
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">灵活就业有它的现实基础：</p>
+                <p class="text-line reveal-item">门槛相对较低，时间相对灵活，能带来即时收入。</p>
+                <p class="text-line reveal-item">同时，许多骑手也表达过类似的期待：</p>
+                <p class="text-line reveal-item">收入更稳定一些</p>
+                <p class="text-line reveal-item">保障更明确一些</p>
+                <p class="text-line reveal-item">对劳动过程的规则能更透明一些。</p>
+                <p class="text-line reveal-item">没有这三条</p>
+                <p class="text-line reveal-item">那就不是福利</p>
+                <p class="text-line reveal-item">而是对现实困境的无奈妥协。</p>
+            </div>
+
+            <div class="media-container-16-9 reveal-item">
+                <img src="image/14.png" alt="城市道路骑手背影结尾图像">
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">这不是一份解决方案</p>
+                <p class="text-line reveal-item">只是一次观察记录。</p>
+                <p class="text-line reveal-item">新就业形态仍在发生</p>
+                <p class="text-line reveal-item">外卖骑手仍在城市的道路上继续工作。</p>
+                <p class="text-line reveal-item">订单会结束</p>
+                <p class="text-line reveal-item">但订单之外的生活还在继续</p>
+            </div>
+
+            <button class="action-btn reveal-item" style="background: var(--accent-yellow); color:#111827; --mt: 2rem;" onclick="openModal()">
+                <span class="btn-icon" style="background:#111827;"></span>
+                <span>{留下你的观察}</span>
+            </button>
+
+        </main>
+    </div>
+
+    <!-- Point 5 & 6：修改三大职业专属浮窗Modal文本内容及顶部黄色外框结构 -->
+    <!-- 1. 网约车司机 专属浮窗 -->
+    <div id="modal-driver" class="standalone-modal-overlay" onclick="closeModalOnBg(event, 'modal-driver')">
+        <div class="modal-popup-card">
+            <div class="modal-popup-header">
+                <div class="modal-popup-title">网约车司机观察</div>
+                <button class="modal-close-icon" onclick="closeInfoModal('modal-driver')">×</button>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">
+                    <strong>接收出行需求，完成接驾与运输。</strong><br>
+                    一趟行程需要经过接单、接驾、行驶与送达。订单需求、道路状况和平台规则，共同影响着司机的工作节奏。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 外卖骑手 专属浮窗 -->
+    <div id="modal-rider" class="standalone-modal-overlay" onclick="closeModalOnBg(event, 'modal-rider')">
+        <div class="modal-popup-card">
+            <div class="modal-popup-header">
+                <div class="modal-popup-title">外卖骑手观察</div>
+                <button class="modal-close-icon" onclick="closeInfoModal('modal-rider')">×</button>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">
+                    <strong>从商家取餐，再将餐食送到指定地点。</strong><br>
+                    接单、取餐、配送，看似简单的流程，需要协调等餐时间、行驶路线与交付地点。午晚餐高峰，也往往意味着更集中的配送需求。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 快递分拣员 专属浮窗 -->
+    <div id="modal-courier" class="standalone-modal-overlay" onclick="closeModalOnBg(event, 'modal-courier')">
+        <div class="modal-popup-card">
+            <div class="modal-popup-header">
+                <div class="modal-popup-title">快递分拣员观察</div>
+                <button class="modal-close-icon" onclick="closeInfoModal('modal-courier')">×</button>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">
+                    <strong>在仓库或分拨中心，完成包裹的扫描、分类与转运。</strong><br>
+                    一个包裹在抵达收件人手中之前，需要经过多个物流环节。分拣作业连接着包裹的集中处理与后续运输，也有自己的作业流程和时间安排。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 校园观察片段 浮窗 -->
+    <div id="modal-info-2" class="standalone-modal-overlay" onclick="closeModalOnBg(event, 'modal-info-2')">
+        <div class="modal-popup-card">
+            <div class="modal-popup-header">
+                <div class="modal-popup-title">校园观察片段</div>
+                <button class="modal-close-icon" onclick="closeInfoModal('modal-info-2')">×</button>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">配送员A：在学校送餐要更注意安全问题。忙的时候给的时间会长一点，不同档口出餐时间不一样。</div>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">配送员B：在外面是按照单量计算，工资更高；学校里面就是固定工资，没有提成。</div>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">职工：外卖开通后订单量明显增加，分时段来看，没放学时外卖更多，下课后来食堂的人多了，外卖单子就顾不过来。</div>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">学生：方便，能减少排队；食堂出品，食品安全更有保障。</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 相关资料汇总 浮窗 -->
+    <div id="modal-info-3" class="standalone-modal-overlay" onclick="closeModalOnBg(event, 'modal-info-3')">
+        <div class="modal-popup-card">
+            <div class="modal-popup-header">
+                <div class="modal-popup-title">相关资料汇总</div>
+                <button class="modal-close-icon" onclick="closeInfoModal('modal-info-3')">×</button>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">美团年报及平台公开数据：外卖骑手规模持续扩大，2023年通过美团平台获得收入的骑手约745万。</div>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">官媒及相关调查：灵活就业群体中，外卖骑手是典型代表，收入与订单量直接挂钩，社会保险参与率相对较低。</div>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">平台经济与供需关系：市场需求推动配送岗位增加，同时形成算法派单、考核与即时结算的运行模式。</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 配送过程模拟 浮窗 -->
+    <div id="modal-info-sim" class="standalone-modal-overlay" onclick="closeModalOnBg(event, 'modal-info-sim')">
+        <div class="modal-popup-card">
+            <div class="modal-popup-header">
+                <div class="modal-popup-title">配送过程模拟</div>
+                <button class="modal-close-icon" onclick="closeInfoModal('modal-info-sim')">×</button>
+            </div>
+            <div class="sim-box">
+                <div class="sim-step">
+                    <div class="media-container-16-9" style="margin: 0 0 8px 0;">
+                        <img src="image/14.png" alt="接单状态">
+                    </div>
+                    <p class="text-line">接到订单：系统显示取餐地点、送达时限。</p>
+                </div>
+                <div class="sim-step">
+                    <div class="media-container-16-9" style="margin: 12px 0 8px 0;">
+                        <img src="image/15.jpg" alt="取餐状态">
+                    </div>
+                    <p class="text-line">取餐：在商家等待，有时需要催促，有时需要确认。</p>
+                </div>
+                <div class="sim-step">
+                    <div class="media-container-16-9" style="margin: 12px 0 8px 0;">
+                        <img src="image/18.png" alt="配送路线">
+                    </div>
+                    <p class="text-line">配送中：根据导航规划路线，注意时间与路况。</p>
+                </div>
+                <div class="sim-step">
+                    <div class="media-container-16-9" style="margin: 12px 0 8px 0;">
+                        <img src="image/14.png" alt="送达拍照">
+                    </div>
+                    <p class="text-line">送达：完成拍照或确认，等待下一单。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Feedback/Observation Form -->
+    <div id="feedbackModal" class="modal-overlay" onclick="closeModalOnBg(event, 'feedbackModal')">
+        <div class="modal-card">
+            <h3 class="modal-title">留下你的观察与感受</h3>
+            <textarea class="modal-textarea" placeholder="关于外卖骑手或新就业形态，你想表达什么..."></textarea>
+            <button class="modal-submit" onclick="submitObservation()">提交观察</button>
+        </div>
+    </div>
+
+    <script>
+        // 0. 自动平滑滚动到第二页（正文起点）顶部
+        function scrollToSection2() {
+            const section2 = document.getElementById('section-2');
+            if (section2) {
+                section2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // 1. Intersection Observer for Scroll Animations & Chart Trigger
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px 0px -50px 0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            const revealElements = document.querySelectorAll('.reveal-item');
+            revealElements.forEach(el => observer.observe(el));
+        });
+
+        // 2. 独立全屏模态浮窗 控制逻辑
+        function openInfoModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+                document.body.classList.add('modal-open'); // 阻断背景滚动
+            }
+        }
+
+        function closeInfoModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.classList.remove('modal-open'); // 恢复背景可滚动
+            }
+        }
+
+        // 点击背景遮罩关闭浮窗
+        function closeModalOnBg(e, modalId) {
+            if (e.target.classList.contains('standalone-modal-overlay') || e.target.classList.contains('modal-overlay')) {
+                closeInfoModal(modalId);
+            }
+        }
+
+        // 3. 用户留言提交
+        function openModal() {
+            openInfoModal('feedbackModal');
+        }
+
+        function submitObservation() {
+            alert('感谢你的思考与留下观察记录！');
+            closeInfoModal('feedbackModal');
+        }
+    </script>
+</body>
+</html>
