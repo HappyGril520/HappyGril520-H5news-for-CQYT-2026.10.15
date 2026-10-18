@@ -8,6 +8,7 @@
         :root {
             --primary-bg: #FAFAFA;
             --accent-yellow: #FFCD38;
+            --accent-orange: #F59E0B;
             --text-primary: #1F2937;
             --text-secondary: #4B5563;
             --text-muted: #9CA3AF;
@@ -18,22 +19,22 @@
             --radius-lg: 24px;
 
             /* 全局默认可控间距变量 */
-            --header-padding-top: 0rem;       /* 头部区域顶部内边距 */
-            --header-padding-bottom: 2rem;    /* 头部区域底部内边距 */
-            --header-title-mt: 18vh;          /* 大标题上边距 (控制标题升降) */
-            --header-title-mb: 1.25rem;       /* 大标题下边距 (控制大小标题间距) */
+            --header-padding-top: 0rem;
+            --header-padding-bottom: 2rem;
+            --header-title-mt: 18vh;
+            --header-title-mb: 1.25rem;
             
-            --hint-default-mt: 2.5rem;        /* 默认“向下滑动”上间距 */
-            --hint-default-mb: 2.5rem;        /* 默认“向下滑动”下间距 */
+            --hint-default-mt: 2.5rem;
+            --hint-default-mb: 2.5rem;
             
-            --block-default-mt: 1.75rem;      /* 文本块默认上间距 */
-            --block-default-mb: 1.75rem;      /* 文本块默认下间距 */
+            --block-default-mt: 1.75rem;
+            --block-default-mb: 1.75rem;
             
-            --media-default-mt: 1.75rem;      /* 媒体占位图默认上间距 */
-            --media-default-mb: 1.75rem;      /* 媒体占位图默认下间距 */
+            --media-default-mt: 1.75rem;
+            --media-default-mb: 1.75rem;
             
-            --btn-default-mt: 1.5rem;        /* 按钮默认上间距 */
-            --btn-default-mb: 1.5rem;        /* 按钮默认下间距 */
+            --btn-default-mt: 1.5rem;
+            --btn-default-mb: 1.5rem;
         }
 
         * {
@@ -108,7 +109,6 @@
             z-index: 2;
             min-height: 100vh;
             
-            /* 背景缓动入场动画 */
             animation: headerBgFade 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             will-change: opacity, transform;
         }
@@ -133,7 +133,6 @@
             margin-bottom: var(--mb, var(--header-title-mb));
             line-height: 1.1;
 
-            /* 大标题上升缓动动画 */
             animation: titleUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
             opacity: 0;
             will-change: opacity, transform;
@@ -148,7 +147,6 @@
             display: inline-block;
             padding-bottom: 0.75rem;
 
-            /* 副标题上升缓动动画 */
             animation: titleUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
             opacity: 0;
             will-change: opacity, transform;
@@ -337,8 +335,8 @@
             background-color: #D1D5DB;
         }
 
-        /* 独立可控间距：媒体占位图 16:9 与视频容器 */
-        .media-placeholder-16-9,
+        /* 独立可控间距：媒体容器（包含图片18.png）与视频容器 */
+        .media-container-16-9,
         .video-container-16-9 {
             width: 100%;
             aspect-ratio: 16 / 9;
@@ -355,12 +353,7 @@
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
         }
 
-        .media-placeholder-16-9 {
-            border: 1px dashed #D1D5DB;
-            color: var(--text-muted);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-        }
-
+        .media-container-16-9 img,
         .video-container-16-9 video {
             width: 100%;
             height: 100%;
@@ -369,34 +362,357 @@
             border-radius: var(--radius-md);
         }
 
-        .media-placeholder-16-9 span {
-            font-size: 0.85rem;
-            margin-top: 8px;
-            color: #6B7280;
-            font-weight: 500;
-        }
-
-        /* 独立可控间距：网格图 */
-        .grid-1-1-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+        /* 补全 X 轴与 Y 轴实线 */
+        .chart-card-container {
+            width: 100%;
+            background: #FFFFFF;
+            border-radius: var(--radius-md);
+            padding: 1.35rem 1.15rem 1.05rem;
             margin-top: var(--mt, var(--media-default-mt));
             margin-bottom: var(--mb, var(--media-default-mb));
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid #F3F4F6;
         }
 
-        .media-placeholder-1-1 {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
-            border-radius: 12px;
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 0.25rem;
+            letter-spacing: 0.02em;
+        }
+
+        .chart-subtitle {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .chart-layout {
+            display: grid;
+            grid-template-columns: 32px minmax(0, 1fr);
+            column-gap: 8px;
+            align-items: stretch;
+        }
+
+        .y-axis-labels {
+            height: 196px;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 2px 0 0;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .chart-plot {
+            height: 196px;
+            position: relative;
+            border-left: 2px solid #9CA3AF;
+            border-bottom: 2px solid #9CA3AF;
+            isolation: isolate;
+        }
+
+        .chart-grid-lines {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .chart-grid-lines span {
+            display: block;
+            width: 100%;
+            height: 0;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .chart-grid-lines span:last-child {
+            border-top-color: #9CA3AF;
+        }
+
+        .chart-bars {
+            position: absolute;
+            inset: 0 3% 0 3%;
+            display: flex;
+            align-items: stretch;
+            justify-content: space-evenly;
+            z-index: 1;
+        }
+
+        .chart-column {
+            position: relative;
+            height: 100%;
+            width: 38%;
+            min-width: 0;
+        }
+
+        .bar-value {
+            position: absolute;
+            left: 50%;
+            bottom: calc(var(--bar-height) + 6px);
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            line-height: 1;
+            font-weight: 800;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .bar-shape {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            width: min(48px, 66%);
+            height: var(--bar-height);
+            border-radius: 7px 7px 0 0;
+            transform: translateX(-50%) scaleY(0);
+            transform-origin: bottom;
+            transition: transform 1.15s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 5px rgba(31, 41, 55, 0.08);
+        }
+
+        /* 两根柱体均以纵轴最大值 4 亿人为基准，比例分别为 70% 与 80% */
+        .bar-2025 {
+            --bar-height: 70%;
+            background: linear-gradient(180deg, #FFE082 0%, var(--accent-yellow) 100%);
+        }
+
+        .bar-2026 {
+            --bar-height: 80%;
+            background: linear-gradient(180deg, #FBBF24 0%, var(--accent-orange) 100%);
+        }
+
+        .chart-card-container.visible .bar-shape {
+            transform: translateX(-50%) scaleY(1);
+        }
+
+        .x-axis-labels {
+            display: grid;
+            grid-template-columns: 32px minmax(0, 1fr) minmax(0, 1fr);
+            column-gap: 8px;
+            padding-top: 10px;
+        }
+
+        .x-axis-label {
+            font-size: 0.8rem;
+            font-weight: 650;
+            color: var(--text-secondary);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .chart-source-note {
+            margin-top: 0.85rem;
+            font-size: 0.72rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* 校园观察：页面正文卡片排版 */
+        .campus-observation-card {
+            background: #F9FAFB;
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1.25rem 0.5rem;
+            border: 1px solid #E5E7EB;
+            border-top: 4px solid var(--accent-yellow);
+            margin-top: var(--mt, var(--block-default-mt));
+            margin-bottom: var(--mb, var(--block-default-mb));
+        }
+
+        .campus-card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed #E5E7EB;
+        }
+
+        .campus-item-text {
+            font-size: 0.95rem;
+            line-height: 1.75;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+            text-align: justify;
+        }
+
+        .editorial-section {
+            margin-top: 2.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-kicker {
+            margin-bottom: 0.45rem;
+            color: #9A7200;
+            font-size: 0.76rem;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: 0.12em;
+        }
+
+        .section-title {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 800;
+            line-height: 1.45;
+            text-align: center;
+        }
+
+        .editorial-copy {
+            margin: 0 0 0.85rem;
+            color: var(--text-secondary);
+            font-size: 0.98rem;
+            line-height: 1.9;
+            text-align: justify;
+            overflow-wrap: anywhere;
+        }
+
+        .editorial-copy:last-child { margin-bottom: 0; }
+
+        .stat-highlight {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.25rem 0;
+            padding: 1.1rem 1rem;
+            border: 1px solid #F3E3A9;
+            border-left: 4px solid var(--accent-yellow);
+            border-radius: var(--radius-md);
+            background: #FFFCF1;
+        }
+
+        .stat-highlight-value {
+            flex: 0 0 auto;
+            color: #8A6500;
+            font-size: 1.65rem;
+            font-weight: 850;
+            line-height: 1.1;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-highlight-copy {
+            color: var(--text-secondary);
+            font-size: 0.86rem;
+            line-height: 1.65;
+        }
+
+        .flow-strip {
+            display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px dashed #D1D5DB;
-            color: var(--text-muted);
-            font-size: 0.75rem;
+            gap: 0.4rem;
+            margin: 1.2rem 0;
+            padding: 0.9rem 0.45rem;
+            border-radius: 12px;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+        }
+
+        .flow-step {
+            flex: 1 1 0;
+            min-width: 0;
+            padding: 0.65rem 0.25rem;
+            border-radius: 8px;
+            background: #FFFFFF;
+            color: var(--text-primary);
+            font-size: 0.78rem;
+            font-weight: 750;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .flow-arrow {
+            flex: 0 0 auto;
+            color: #A97900;
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        .video-heading {
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text-primary);
+            font-size: 1.08rem;
+            font-weight: 800;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        .video-transcript {
+            margin: 1rem 0 1.5rem;
+            padding: 1rem 1.05rem;
+            border-left: 3px solid var(--accent-yellow);
+            background: #F9FAFB;
+            border-radius: 0 12px 12px 0;
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            line-height: 1.9;
+            text-align: justify;
+        }
+
+        .quote-item {
+            margin-bottom: 0.8rem;
+            padding: 1rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            background: #FFFFFF;
+        }
+
+        .quote-role {
+            margin-bottom: 0.45rem;
+            color: #8A6500;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+        }
+
+        .quote-content {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        .source-link {
+            display: inline-block;
+            margin-top: 0.55rem;
+            color: #876300;
+            font-size: 0.84rem;
+            font-weight: 700;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .closing-thought {
+            margin-top: 1.25rem;
+            padding: 1.15rem 1rem;
+            border-radius: 12px;
+            background: #FFFAE9;
+            border: 1px solid #F3E3A9;
+        }
+
+        .data-disclaimer-note {
+            font-size: 0.78rem;
+            font-style: italic;
+            color: #4B5563;
+            text-align: left;
+            line-height: 1.5;
+            margin-top: 0.8rem;
+            margin-bottom: var(--mb, var(--block-default-mb));
+            padding: 0 0.2rem;
         }
 
         /* 独立可控间距：交互按钮 */
@@ -450,7 +766,7 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
-            padding: 1.5rem;
+            padding: 1.25rem;
         }
 
         .standalone-modal-overlay.active {
@@ -461,10 +777,10 @@
         .modal-popup-card {
             width: 100%;
             max-width: 420px;
-            max-height: 80vh;
+            max-height: 85vh;
             background: #FFFFFF;
             border-radius: var(--radius-lg);
-            padding: 1.5rem;
+            padding: 1.25rem;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             position: relative;
             display: flex;
@@ -483,7 +799,8 @@
         .modal-popup-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
+            position: relative;
             border-bottom: 1px solid #E5E7EB;
             padding-bottom: 0.75rem;
             margin-bottom: 0.25rem;
@@ -493,9 +810,14 @@
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--text-primary);
+            text-align: center;
         }
 
         .modal-close-icon {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
             width: 28px;
             height: 28px;
             border-radius: 50%;
@@ -519,16 +841,147 @@
             position: relative;
             background: #F9FAFB;
             border: 1px solid #E5E7EB;
-            border-left: 4px solid var(--accent-yellow);
+            border-top: 4px solid var(--accent-yellow);
             border-radius: var(--radius-md);
             padding: 1rem;
         }
 
         .info-card-item-text {
             font-size: 0.92rem;
-            line-height: 1.6;
+            line-height: 1.65;
             color: #374151;
             text-align: left;
+        }
+
+        /* 微信/H5 风格：全新轮播模拟交互弹窗 */
+        .sim-carousel-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            touch-action: pan-y;
+        }
+
+        .sim-carousel-track {
+            display: flex;
+            width: 100%;
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: transform;
+        }
+
+        .sim-slide {
+            flex: 0 0 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 1:1 图片展示容器 */
+        .sim-image-box {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #F3F4F6;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 0.85rem;
+        }
+
+        .sim-image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 第一人称沉浸式文字卡片 */
+        .sim-text-card {
+            width: 100%;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-top: 3.5px solid var(--accent-yellow);
+            border-radius: 12px;
+            padding: 0.95rem 1rem;
+            min-height: 110px;
+        }
+
+        .sim-step-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #8A6500;
+            background: #FEF3C7;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 0.4rem;
+        }
+
+        .sim-step-quote {
+            font-size: 0.92rem;
+            line-height: 1.65;
+            color: var(--text-primary);
+            text-align: justify;
+        }
+
+        /* 底部导航区：左右箭头按钮与指示器 */
+        .sim-controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding: 0 0.2rem;
+        }
+
+        .sim-arrow-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 1.5px solid #E5E7EB;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sim-arrow-btn:active {
+            transform: scale(0.92);
+            background: var(--accent-yellow);
+            border-color: var(--accent-yellow);
+        }
+
+        .sim-arrow-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .sim-dots-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sim-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #D1D5DB;
+            transition: all 0.3s ease;
+        }
+
+        .sim-dot.active {
+            width: 20px;
+            border-radius: 10px;
+            background: var(--accent-yellow);
         }
 
         /* Modal Overlay for Observation Form */
@@ -569,6 +1022,7 @@
             font-weight: 700;
             margin-bottom: 0.75rem;
             color: var(--text-primary);
+            text-align: center;
         }
 
         .modal-textarea {
@@ -599,42 +1053,22 @@
             cursor: pointer;
         }
 
-        /* SVG Icons */
-        .svg-icon {
-            width: 24px;
-            height: 24px;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        /* Simulation Card Box */
-        .sim-box {
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            border-radius: var(--radius-md);
-            padding: 1.25rem;
-            margin: 1rem 0;
-        }
-
-        .sim-step {
-            margin-bottom: 1.25rem;
-        }
-
-        .sim-step:last-child {
-            margin-bottom: 0;
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="h5-container">
-        <!-- Warm yellow transparent gradient at the bottom 25% -->
         <div class="bottom-gradient-bg"></div>
 
-        <!-- Header Title Section with Background Image and Entry Animation -->
+        <!-- Header Title Section -->
         <header class="header-section">
             <h1 class="main-title" style="--mt: 18vh;">订单之外</h1>
             <div class="sub-title">新就业形态下的外卖骑手观察</div>
@@ -661,7 +1095,6 @@
 
             <!-- 圆形蒙版图片组 -->
             <div class="circle-mask-group reveal-item">
-                <!-- 1. 网约车司机 -->
                 <div class="circle-avatar-item" onclick="openInfoModal('modal-driver')">
                     <div class="circle-avatar">
                         <img src="image/2.jpeg" alt="网约车司机">
@@ -669,7 +1102,6 @@
                     <div class="circle-avatar-outer-label">网约车司机</div>
                 </div>
 
-                <!-- 2. 外卖骑手 -->
                 <div class="circle-avatar-item" onclick="openInfoModal('modal-rider')">
                     <div class="circle-avatar">
                         <img src="image/4.jpeg" alt="外卖骑手">
@@ -677,7 +1109,6 @@
                     <div class="circle-avatar-outer-label">外卖骑手</div>
                 </div>
 
-                <!-- 3. 快递分拣员 -->
                 <div class="circle-avatar-item" onclick="openInfoModal('modal-courier')">
                     <div class="circle-avatar">
                         <img src="image/3.jpeg" alt="快递分拣员">
@@ -686,7 +1117,6 @@
                 </div>
             </div>
 
-            <!-- 引导点击文字 -->
             <div class="reveal-item avatar-click-guide">
                 点击头像查看详情
             </div>
@@ -697,54 +1127,88 @@
                 <p class="text-line reveal-item">工作时间相对灵活，却也高度不确定。</p>
             </div>
 
-            <!-- Section 2 -->
+            <!-- Section 2 引导下滑 -->
             <div class="reveal-item scroll-down-hint">
                 <span>↓ 向下滑动阅读</span>
                 <div class="arrow"></div>
             </div>
 
-            <!-- 16:9 Image Placeholder -->
-            <div class="media-placeholder-16-9 reveal-item">
-                <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                <span>&lt;16:9 视听/数据图像&gt;</span>
+            <!-- 图片 18.png -->
+            <div class="media-container-16-9 reveal-item" style="background: transparent; box-shadow: none; margin-left: -1.5rem; margin-right: -1.5rem; width: calc(100% + 3rem); border-radius: 0;">
+                <img src="image/18.png" alt="新就业形态观察" style="border-radius: 0;">
             </div>
 
-            <div class="text-block-group">
-                <p class="text-line reveal-item">新就业形态</p>
-                <p class="text-line reveal-item">正在成为中国劳动力市场中一个无法忽视的现实</p>
-                <p class="text-line reveal-item">它不是个别人的临时选择，而是数百万人正在经历的日常</p>
-                <p class="text-line reveal-item">外卖骑手是其中最具代表性的一类</p>
-                <p class="text-line reveal-item">他们出现在写字楼门口、居民小区、校园道路</p>
-                <p class="text-line reveal-item">成为城市运转中可见却又容易被忽略的一部分</p>
-            </div>
-
-            <!-- 1:1 Image Placeholder * 3 -->
-            <div class="grid-1-1-container reveal-item">
-                <div class="media-placeholder-1-1">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <span>1:1 图表</span>
+            <section class="editorial-section reveal-item" aria-labelledby="macro-section-title">
+                <div class="section-kicker">宏观社会观察</div>
+                <h2 class="section-title" id="macro-section-title">一笔订单 连接起怎样的劳动</h2>
+                <p class="editorial-copy">外卖订单出现在手机屏幕上，完成订单的劳动却发生在线下。</p>
+                <p class="editorial-copy">从消费者下单、商家备餐，到配送人员取餐和交付，平台将分散的需求组织起来，也让不同环节的劳动产生联系。</p>
+                <p class="editorial-copy">这种联系并不只存在于外卖行业。出行服务、快递物流等领域，也在以各自不同的方式，将市场需求转化为具体的工作任务。</p>
+                <div class="stat-highlight" role="note" aria-label="平台骑手数据">
+                    <div class="stat-highlight-value">约745万人</div>
+                    <div class="stat-highlight-copy">美团2023年公开报告显示，2023年通过美团平台获得收入的骑手约745万人。该口径不等同于全职骑手人数或新增岗位数。</div>
                 </div>
-                <div class="media-placeholder-1-1">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <span>1:1 肖像</span>
+            </section>
+
+            <!-- 动态柱状图 -->
+            <div class="chart-card-container reveal-item" role="img" aria-label="灵活就业人数：2025年约2.8亿人，2026年预计约3.2亿人。纵轴单位为亿人，纵轴范围为0至4亿人。">
+                <div class="chart-title">灵活就业人数</div>
+                <div class="chart-subtitle">单位：亿人</div>
+                <div class="chart-layout">
+                    <div class="y-axis-labels" aria-hidden="true">
+                        <span>4.0</span>
+                        <span>3.0</span>
+                        <span>2.0</span>
+                        <span>1.0</span>
+                        <span>0</span>
+                    </div>
+                    <div class="chart-plot" aria-hidden="true">
+                        <div class="chart-grid-lines">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <div class="chart-bars">
+                            <div class="chart-column">
+                                <div class="bar-value" style="--bar-height:70%">2.8</div>
+                                <div class="bar-shape bar-2025"></div>
+                            </div>
+                            <div class="chart-column">
+                                <div class="bar-value" style="--bar-height:80%">3.2</div>
+                                <div class="bar-shape bar-2026"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="media-placeholder-1-1">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <span>1:1 场景</span>
+                <div class="x-axis-labels">
+                    <span aria-hidden="true"></span>
+                    <div class="x-axis-label">2025年</div>
+                    <div class="x-axis-label">2026年（预测）</div>
                 </div>
+                <div class="chart-source-note">2025年为报告估算，2026年为报告预测</div>
             </div>
 
-            <div class="text-block-group">
-                <p class="text-line reveal-item">那么，谁在从事这些工作？</p>
-                <p class="text-line reveal-item">他们为什么选择这样的工作方式</p>
-                <p class="text-line reveal-item">订单之外，他们的生活又是什么样的</p>
-                <p class="text-line reveal-item">我们把观察的镜头，先对准其中人数最多、也最常被看见的一群人——外卖骑手</p>
+            <div class="text-block-group editorial-section">
+                <p class="editorial-copy reveal-item">灵活就业，已成为不可忽视的就业现象。数字背后，是越来越多样化的就业选择，也是劳动者与市场需求之间正在发生的连接。</p>
+                <p class="reveal-item data-disclaimer-note">数据说明：以上数字为研究报告中的估算与预测。由于统计口径、样本范围和推算方法存在差异，不宜直接将其与国家统计部门的就业、失业指标进行换算。</p>
             </div>
 
-            <div class="media-placeholder-16-9 reveal-item">
-                <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-                <span>&lt;16:9 纪实影像片段&gt;</span>
-            </div>
+            <section class="editorial-section reveal-item" aria-labelledby="supply-demand-title">
+                <div class="section-kicker">平台运行机制</div>
+                <h2 class="section-title" id="supply-demand-title">平台经济与供需关系</h2>
+                <div class="flow-strip" aria-label="消费需求到线下服务的流程">
+                    <div class="flow-step">消费需求</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">平台订单</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">线下履约</div>
+                </div>
+                <p class="editorial-copy">消费者产生需求，平台汇集并组织订单，商家与劳动者再通过备餐、取送、运输等环节完成服务。</p>
+                <p class="editorial-copy">订单连接的不只是消费与交易，也连接着具体的工作流程。市场需求影响订单的产生与分布，而平台规则、服务场景及劳动组织方式，则影响这些订单如何被完成。</p>
+                <p class="editorial-copy">订单数量的变化，并不必然等同于新增岗位数量的变化。要理解平台经济如何影响劳动，还需要进入具体的工作场景。</p>
+            </section>
 
             <!-- Section 3 -->
             <div class="reveal-item scroll-down-hint">
@@ -752,26 +1216,16 @@
                 <div class="arrow"></div>
             </div>
 
-            <div class="media-placeholder-16-9 reveal-item">
-                <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                <span>&lt;16:9 图像&gt;</span>
-            </div>
+            <!-- 校园观察视频与正文 -->
+            <section class="editorial-section reveal-item" aria-labelledby="campus-section-title">
+                <div class="section-kicker">微观社会观察</div>
+                <h2 class="section-title" id="campus-section-title">当配送服务进入校园</h2>
+                <p class="editorial-copy">校园是观察平台服务进入具体生活场景的一个切口</p>
+                <p class="editorial-copy">传统堂食与线上点餐并存，食堂需要安排备餐与出餐，配送人员需要完成取餐与交付，学生则根据自己的需求选择就餐方式。</p>
+                <p class="editorial-copy">当校园出现专属配送队伍，变化便不再局限于点餐入口，也延伸到了订单如何流转、工作如何安排，以及不同群体如何适应这一服务模式。</p>
+            </section>
 
-            <div class="text-block-group">
-                <p class="text-line reveal-item">平台经济正在改变城市的劳动与生活场景。</p>
-                <p class="text-line reveal-item">外卖不再只是“送到门口”的服务</p>
-                <p class="text-line reveal-item">它连接着商家、消费者，也连接着一种新的劳动方式。</p>
-                <p class="text-line reveal-item">对骑手而言，配送是一份现实的工作</p>
-                <p class="text-line reveal-item">但在订单之外，他们仍拥有自己的生活、问题与选择。</p>
-                <p class="text-line reveal-item">校园是观察这一变化的具体切口。</p>
-                <p class="text-line reveal-item">食堂作为校园传统餐饮的核心载体</p>
-                <p class="text-line reveal-item">品类繁多的档口为师生提供多样选择</p>
-                <p class="text-line reveal-item">传统堂食仍是熟悉的就餐方式</p>
-                <p class="text-line reveal-item">与此同时，校内专属配送队伍正在成型</p>
-                <p class="text-line reveal-item">两类配送在服务场景与运行模式上存在明显差异</p>
-            </div>
-
-            <!-- 视频组件：路径已调整为 video/video_01.mp4 -->
+            <h3 class="video-heading reveal-item">校园观察｜校园餐饮与配送服务</h3>
             <div class="video-container-16-9 reveal-item">
                 <video poster="image/15.jpg" controls playsinline preload="metadata">
                     <source src="video/video_01.mp4" type="video/mp4">
@@ -779,22 +1233,57 @@
                 </video>
             </div>
 
-            <!-- 触发按钮 -->
-            <button class="action-btn reveal-item" onclick="openInfoModal('modal-info-2')">
-                <span class="btn-icon"></span>
-                <span>校园观察</span>
-            </button>
+            <p class="video-transcript reveal-item">食堂作为校园传统餐饮的核心载体，承载了师生的日常饮食需求。是校园生活不可或缺的重要场景，品类繁多的餐饮档口为师生们提供了丰富多样的饮食选择。传统的堂食模式依然是许多人最为熟悉与习惯的就餐方式。与此同时，校园餐饮服务的边界正在不断升级，校内专属配送队伍正在逐渐成型，两类配送在服务场景与运行模式上存在明显差异。贴合校园环境的配送服务也成为师生的重要选择之一。</p>
 
-            <div class="text-block-group">
-                <p class="text-line reveal-item">校园食堂外卖的推行</p>
-                <p class="text-line reveal-item">是校园餐饮数字化转型的重要实践</p>
-                <p class="text-line reveal-item">它让平台配送进一步渗透进相对封闭的生活场景</p>
-                <p class="text-line reveal-item">也让我们看见新就业形态如何进入具体的日常。</p>
-            </div>
+            <section class="editorial-section reveal-item" aria-labelledby="campus-observation-title">
+                <h2 class="section-title" id="campus-observation-title">校园观察｜听听他们怎么看</h2>
+
+                <div class="quote-item">
+                    <div class="quote-role">配送员 A · 工作安排</div>
+                    <p class="quote-content">“比如说时间上，在学校送餐要更注意安全问题。”</p>
+                    <p class="quote-content" style="margin-top:0.5rem;">“这个要分时间段，在忙的时候，给的时间会长一点；再比如说那边的抄手和米线，它们那边的时间就会比较短；大众餐相对的时间就会更长一点。”</p>
+                </div>
+
+                <div class="quote-item">
+                    <div class="quote-role">配送员 B · 计酬方式</div>
+                    <p class="quote-content">“在外面是按照单量计算的，工资更高；学校里面就是固定工资，没有提成。”</p>
+                </div>
+
+                <div class="quote-item">
+                    <div class="quote-role">食堂职工 · 订单与出餐节奏</div>
+                    <p class="quote-content">“变化量大，比以前的生意更好一些。我们做生意的肯定是希望订单越多越好。”</p>
+                    <p class="quote-content" style="margin-top:0.5rem;">“还没有正式放学的时候是外卖会更多一些，但是到了下课之后来食堂的人多了，外卖的单子就顾不过来了。”</p>
+                </div>
+
+                <div class="quote-item">
+                    <div class="quote-role">学生 A · 就餐便利</div>
+                    <p class="quote-content">“而且下课之后就可以直接拿到也省去很多排队的时间。”</p>
+                </div>
+
+                <div class="quote-item">
+                    <div class="quote-role">学生 B · 服务选择</div>
+                    <p class="quote-content">“相比起校外的外卖，校园送他的餐品是食堂出品的，食品安全更有保障。”</p>
+                </div>
+            </section>
+
+            <section class="editorial-section reveal-item" aria-labelledby="digital-campus-title">
+                <div class="section-kicker">现象归纳</div>
+                <h2 class="section-title" id="digital-campus-title">校园餐饮数字化与劳动生态</h2>
+                <p class="editorial-copy">从点餐到备餐，从取餐到交付，线上订单把校园餐饮中原本分散的环节联系起来。</p>
+                <p class="editorial-copy">对于学生而言，变化体现在就餐方式和时间安排上；对于食堂职工，变化体现在订单分布与出餐节奏上；对于配送员，则体现在工作流程、服务规则与计酬方式上。</p>
+                <p class="editorial-copy">同一种服务进入不同群体的日常生活，也会呈现出不同的实际影响。</p>
+
+                <div class="closing-thought">
+                    <h3 class="video-heading" style="margin-top:0;">市场需求催生新的就业岗位</h3>
+                    <p class="editorial-copy">当线上餐饮需求需要持续的取送服务来完成，配送便成为连接消费与供给的具体劳动环节。校内配送队伍的形成，呈现了市场需求进入校园后，服务组织方式发生变化的一个具体案例。</p>
+                    <p class="editorial-copy">但岗位需求的增加，不意味着所有配送工作都采用相同的薪酬制度。受访配送员关于固定工资与按单计酬的比较，也体现了不同配送场景下的劳动组织存在差异。</p>
+                    <p class="editorial-copy">从一笔订单出发，我们看到的不只是就餐方式的变化，也包括消费需求、商家经营与配送劳动之间正在形成的联系。</p>
+                </div>
+            </section>
 
             <button class="action-btn reveal-item" onclick="openInfoModal('modal-info-3')">
                 <span class="btn-icon"></span>
-                <span>{查看相关资料汇总}</span>
+                <span>查看资料来源与统计口径</span>
             </button>
 
             <!-- Section 4 Simulation -->
@@ -807,9 +1296,10 @@
                 <p class="text-line reveal-item" style="font-weight:600; color:var(--text-primary);">先试着体验一次完整的配送过程。</p>
             </div>
 
+            <!-- 点击触发最新交互模拟浮窗 -->
             <button class="action-btn reveal-item" onclick="openInfoModal('modal-info-sim')">
                 <span class="btn-icon"></span>
-                <span>{开始模拟}</span>
+                <span>开始模拟</span>
             </button>
 
             <div class="text-block-group">
@@ -833,19 +1323,11 @@
                 <p class="text-line reveal-item" style="color:var(--text-muted); font-size:0.88rem;">（以下内容根据真实观察与访谈整理，做匿名处理）</p>
             </div>
 
-            <div class="media-placeholder-16-9 reveal-item">
-                <span>&lt;16:9 骑手清晨工作记录&gt;</span>
-            </div>
-
             <div class="text-block-group">
                 <p class="text-line reveal-item">他每天的工作从早上开始，到晚上结束。</p>
                 <p class="text-line reveal-item">中间的时间被一单单分割。</p>
                 <p class="text-line reveal-item">问他如何看待这份工作</p>
                 <p class="text-line reveal-item">他说：“能挣钱，时间相对自由，但很累。”</p>
-            </div>
-
-            <div class="media-placeholder-16-9 reveal-item">
-                <span>&lt;16:9 订单之外路边休息特写&gt;</span>
             </div>
 
             <div class="text-block-group">
@@ -857,20 +1339,12 @@
                 <p class="text-line reveal-item">但很少细问每天具体发生了什么。</p>
             </div>
 
-            <div class="media-placeholder-16-9 reveal-item">
-                <span>&lt;16:9 骑手对未来说明图像&gt;</span>
-            </div>
-
             <div class="text-block-group">
                 <p class="text-line reveal-item">他谈到过对未来的想法：</p>
                 <p class="text-line reveal-item">“先干着，看看以后有没有别的机会。”</p>
                 <p class="text-line reveal-item">也谈到过身体的感受：</p>
                 <p class="text-line reveal-item">“腿和腰会酸，雨天和高温天更明显。”</p>
                 <p class="text-line reveal-item">这些内容没有出现在任何订单数据里。</p>
-            </div>
-
-            <div class="media-placeholder-16-9 reveal-item">
-                <span>&lt;16:9 骑手个人日常片段图像&gt;</span>
             </div>
 
             <div class="text-block-group">
@@ -885,10 +1359,6 @@
                 <div class="arrow"></div>
             </div>
 
-            <div class="media-placeholder-16-9 reveal-item">
-                <span>&lt;16:9 群体视角图像&gt;</span>
-            </div>
-
             <div class="text-block-group">
                 <p class="text-line reveal-item">一个人的经历</p>
                 <p class="text-line reveal-item">是这个群体的一部分。</p>
@@ -900,10 +1370,6 @@
                 <p class="text-line reveal-item">社会保险参与率相对较低</p>
                 <p class="text-line reveal-item">劳动关系认定仍存在模糊地带。</p>
                 <p class="text-line reveal-item">这些问题不只出现在某一个骑手身上。</p>
-            </div>
-
-            <div class="media-placeholder-16-9 reveal-item">
-                <span>&lt;16:9 数据与生活的真实交界图像&gt;</span>
             </div>
 
             <div class="text-block-group">
@@ -939,10 +1405,6 @@
                 <p class="text-line reveal-item">而是对现实困境的无奈妥协。</p>
             </div>
 
-            <div class="media-placeholder-16-9 reveal-item">
-                <span>&lt;16:9 城市道路骑手背影结尾图像&gt;</span>
-            </div>
-
             <div class="text-block-group">
                 <p class="text-line reveal-item">这不是一份解决方案</p>
                 <p class="text-line reveal-item">只是一次观察记录。</p>
@@ -954,13 +1416,13 @@
 
             <button class="action-btn reveal-item" style="background: var(--accent-yellow); color:#111827; --mt: 2rem;" onclick="openModal()">
                 <span class="btn-icon" style="background:#111827;"></span>
-                <span>{留下你的观察}</span>
+                <span>留下你的观察</span>
             </button>
 
         </main>
     </div>
 
-    <!-- 三大职业独立专属浮窗 -->
+    <!-- 三大职业专属独立浮窗 -->
     <div id="modal-driver" class="standalone-modal-overlay" onclick="closeModalOnBg(event, 'modal-driver')">
         <div class="modal-popup-card">
             <div class="modal-popup-header">
@@ -968,7 +1430,10 @@
                 <button class="modal-close-icon" onclick="closeInfoModal('modal-driver')">×</button>
             </div>
             <div class="info-card-item">
-                <div class="info-card-item-text">通过平台接单，在城市道路上运送乘客；收入与出车时长、接单完成量直接挂钩。</div>
+                <div class="info-card-item-text">
+                    <strong>接收出行需求，完成接驾与运输。</strong><br>
+                    一趟行程需要经过接单、接驾、行驶与送达。订单需求、道路状况和平台规则，共同影响着司机的工作节奏。
+                </div>
             </div>
         </div>
     </div>
@@ -980,7 +1445,10 @@
                 <button class="modal-close-icon" onclick="closeInfoModal('modal-rider')">×</button>
             </div>
             <div class="info-card-item">
-                <div class="info-card-item-text">在严格的系统配送时限内把餐食送到顾客手中，需要应对复杂路况与天气变化。</div>
+                <div class="info-card-item-text">
+                    <strong>从商家取餐，再将餐食送到指定地点。</strong><br>
+                    接单、取餐、配送，看似简单的流程，需要协调等餐时间、行驶路线与交付地点。午晚餐高峰，也往往意味着更集中的配送需求。
+                </div>
             </div>
         </div>
     </div>
@@ -992,83 +1460,119 @@
                 <button class="modal-close-icon" onclick="closeInfoModal('modal-courier')">×</button>
             </div>
             <div class="info-card-item">
-                <div class="info-card-item-text">穿梭于小区、写字楼与中转站之间，承担包裹装卸、分拣与“最后一公里”配送。</div>
+                <div class="info-card-item-text">
+                    <strong>在仓库或分拨中心，完成包裹的扫描、分类与转运。</strong><br>
+                    一个包裹在抵达收件人手中之前，需要经过多个物流环节。分拣作业连接着包裹的集中处理与后续运输，也有自己的作业流程和时间安排。
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 校园观察片段 浮窗 -->
-    <div id="modal-info-2" class="standalone-modal-overlay" onclick="closeModalOnBg(event, 'modal-info-2')">
-        <div class="modal-popup-card">
-            <div class="modal-popup-header">
-                <div class="modal-popup-title">校园观察片段</div>
-                <button class="modal-close-icon" onclick="closeInfoModal('modal-info-2')">×</button>
-            </div>
-            <div class="info-card-item">
-                <div class="info-card-item-text">配送员A：在学校送餐要更注意安全问题。忙的时候给的时间会长一点，不同档口出餐时间不一样。</div>
-            </div>
-            <div class="info-card-item">
-                <div class="info-card-item-text">配送员B：在外面是按照单量计算，工资更高；学校里面就是固定工资，没有提成。</div>
-            </div>
-            <div class="info-card-item">
-                <div class="info-card-item-text">职工：外卖开通后订单量明显增加，分时段来看，没放学时外卖更多，下课后来食堂的人多了，外卖单子就顾不过来。</div>
-            </div>
-            <div class="info-card-item">
-                <div class="info-card-item-text">学生：方便，能减少排队；食堂出品，食品安全更有保障。</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 相关资料汇总 浮窗 -->
+    <!-- 资料来源与统计口径浮窗 -->
     <div id="modal-info-3" class="standalone-modal-overlay" onclick="closeModalOnBg(event, 'modal-info-3')">
         <div class="modal-popup-card">
             <div class="modal-popup-header">
-                <div class="modal-popup-title">相关资料汇总</div>
-                <button class="modal-close-icon" onclick="closeInfoModal('modal-info-3')">×</button>
+                <div class="modal-popup-title">资料来源与统计口径</div>
+                <button class="modal-close-icon" onclick="closeInfoModal('modal-info-3')" aria-label="关闭">×</button>
             </div>
             <div class="info-card-item">
-                <div class="info-card-item-text">美团年报及平台公开数据：外卖骑手规模持续扩大，2023年通过美团平台获得收入的骑手约745万。</div>
+                <div class="info-card-item-text">
+                    <strong>01｜平台公开数据</strong><br>
+                    《美团2023企业社会责任报告》提及，2023年通过美团平台获得收入的骑手约745万人。该口径反映年度通过平台获得收入的骑手人数，不等同于全职人数或新增岗位数。<br>
+                    <a class="source-link" href="https://media-meituan.todayir.com/20240617113637331835377_tc.pdf" target="_blank" rel="noopener noreferrer">查看报告原文 ↗</a>
+                </div>
             </div>
             <div class="info-card-item">
-                <div class="info-card-item-text">官媒及相关调查：灵活就业群体中，外卖骑手是典型代表，收入与订单量直接挂钩，社会保险参与率相对较低。</div>
+                <div class="info-card-item-text">
+                    <strong>02｜灵活就业规模研究</strong><br>
+                    中国新就业形态研究中心《2025中国蓝领群体就业研究报告》估算，2025年中国灵活就业从业人员约2.8亿人，并预测2026年达到3.2亿人。上述数值为研究报告估算与预测，不宜直接等同于国家统计部门的就业、失业指标。<br>
+                    <a class="source-link" href="https://www.caixin.com/2026-06-10/102452669.html" target="_blank" rel="noopener noreferrer">查看相关报道 ↗</a>
+                </div>
             </div>
             <div class="info-card-item">
-                <div class="info-card-item-text">平台经济与供需关系：市场需求推动配送岗位增加，同时形成算法派单、考核与即时结算的运行模式。</div>
+                <div class="info-card-item-text">
+                    <strong>03｜媒体评论与行业观察</strong><br>
+                    《环球时报》社评《灵活就业＝间歇性失业吗？》讨论灵活就业的统计口径、就业方式及其与失业的区别。该文属于媒体评论，可作为理解现象的补充材料，不应与统计报告混为一谈。<br>
+                    <a class="source-link" href="https://opinion.huanqiu.com/article/6Z7yX7l6k8H" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a>
+                </div>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">
+                    <strong>04｜校园实地观察</strong><br>
+                    本项目采访学生、食堂职工与校内配送员，记录特定校园场景下的订单变化、配送安排与就餐体验。这些材料属于项目的一手观察，能够呈现个案情况，但不能单独代表所有高校或所有配送人员。
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 配送过程模拟 浮窗 -->
+    <!-- =========================================================
+         【全新修改】配送过程模拟 交互浮窗 (全滑动拖拽+倒序图片+第一人称文案)
+         ========================================================= -->
     <div id="modal-info-sim" class="standalone-modal-overlay" onclick="closeModalOnBg(event, 'modal-info-sim')">
         <div class="modal-popup-card">
             <div class="modal-popup-header">
-                <div class="modal-popup-title">配送过程模拟</div>
+                <div class="modal-popup-title">骑手一日配送体验</div>
                 <button class="modal-close-icon" onclick="closeInfoModal('modal-info-sim')">×</button>
             </div>
-            <div class="sim-box">
-                <div class="sim-step">
-                    <div class="media-placeholder-16-9" style="margin: 0 0 8px 0;">
-                        <span>&lt;16:9 接单状态图像&gt;</span>
+            
+            <!-- 轮播交互组件 -->
+            <div class="sim-carousel-wrapper" id="simCarousel">
+                <div class="sim-carousel-track" id="simTrack">
+                    <!-- 步骤 1: 倒序 22.jpeg -->
+                    <div class="sim-slide">
+                        <div class="sim-image-box">
+                            <img src="image/22.jpeg" alt="接到订单">
+                        </div>
+                        <div class="sim-text-card">
+                            <span class="sim-step-tag">步骤 1/4 · 叮！接到新订单</span>
+                            <p class="sim-step-quote">“手机突然响起熟悉的派单音！系统显示是一份急单：3公里内必须送达。我立马扣紧头盔锁扣，熟练地启动电瓶车，开启了这一单的倒计时竞争。”</p>
+                        </div>
                     </div>
-                    <p class="text-line">接到订单：系统显示取餐地点、送达时限。</p>
+
+                    <!-- 步骤 2: 倒序 21.jpeg -->
+                    <div class="sim-slide">
+                        <div class="sim-image-box">
+                            <img src="image/21.jpeg" alt="到达商家取餐">
+                        </div>
+                        <div class="sim-text-card">
+                            <span class="sim-step-tag">步骤 2/4 · 赶往商家取餐</span>
+                            <p class="sim-step-quote">“一路小跑冲进餐馆后厨，出餐口早已排满了等待的同行。我一边核对小票上的餐品清单，一边礼貌地提醒商家出餐快一点，拿上热腾腾的饭菜火速放入保温箱。”</p>
+                        </div>
+                    </div>
+
+                    <!-- 步骤 3: 倒序 20.jpeg -->
+                    <div class="sim-slide">
+                        <div class="sim-image-box">
+                            <img src="image/20.jpeg" alt="紧张配送中">
+                        </div>
+                        <div class="sim-text-card">
+                            <span class="sim-step-tag">步骤 3/4 · 穿越车流配送中</span>
+                            <p class="sim-step-quote">“雨天路滑，导航上的剩余红字时间还在不断减少。我必须在遵守交通规则的同时，穿过拥堵的十字路口和迷宫般的居民区巷道，眼神不敢有丝毫松懈。”</p>
+                        </div>
+                    </div>
+
+                    <!-- 步骤 4: 倒序 19.jpeg -->
+                    <div class="sim-slide">
+                        <div class="sim-image-box">
+                            <img src="image/19.jpeg" alt="顺利送达目标">
+                        </div>
+                        <div class="sim-text-card">
+                            <span class="sim-step-tag">步骤 4/4 · 顺利无接触交付</span>
+                            <p class="sim-step-quote">“一口气爬上五楼，敲开门双手递上餐盒并道一声‘祝您用餐愉快’。当系统弹出‘订单已送达’的绿色提示时，紧绷的神经终于能松一口气，等待下一单的到来。”</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="sim-step">
-                    <div class="media-placeholder-16-9" style="margin: 12px 0 8px 0;">
-                        <span>&lt;16:9 取餐状态图像&gt;</span>
+
+                <!-- 底部交互控制栏：两侧圆形箭头按钮 + 中央指示点 -->
+                <div class="sim-controls-bar">
+                    <button class="sim-arrow-btn" id="simPrevBtn" onclick="moveSimSlide(-1)" aria-label="上一页">&lt;</button>
+                    <div class="sim-dots-container" id="simDots">
+                        <div class="sim-dot active"></div>
+                        <div class="sim-dot"></div>
+                        <div class="sim-dot"></div>
+                        <div class="sim-dot"></div>
                     </div>
-                    <p class="text-line">取餐：在商家等待，有时需要催促，有时需要确认。</p>
-                </div>
-                <div class="sim-step">
-                    <div class="media-placeholder-16-9" style="margin: 12px 0 8px 0;">
-                        <span>&lt;16:9 配送路线图像&gt;</span>
-                    </div>
-                    <p class="text-line">配送中：根据导航规划路线，注意时间与路况。</p>
-                </div>
-                <div class="sim-step">
-                    <div class="media-placeholder-16-9" style="margin: 12px 0 8px 0;">
-                        <span>&lt;16:9 送达拍照图像&gt;</span>
-                    </div>
-                    <p class="text-line">送达：完成拍照或确认，等待下一单。</p>
+                    <button class="sim-arrow-btn" id="simNextBtn" onclick="moveSimSlide(1)" aria-label="下一页">&gt;</button>
                 </div>
             </div>
         </div>
@@ -1092,7 +1596,7 @@
             }
         }
 
-        // 1. Intersection Observer for Scroll Animations
+        // 1. Intersection Observer for Scroll Animations & Chart Trigger
         document.addEventListener('DOMContentLoaded', () => {
             const observerOptions = {
                 root: null,
@@ -1111,6 +1615,9 @@
 
             const revealElements = document.querySelectorAll('.reveal-item');
             revealElements.forEach(el => observer.observe(el));
+
+            // 初始化配送模拟拖拽交互
+            initSimCarousel();
         });
 
         // 2. 独立全屏模态浮窗 控制逻辑
@@ -1118,7 +1625,7 @@
             const modal = document.getElementById(modalId);
             if (modal) {
                 modal.classList.add('active');
-                document.body.classList.add('modal-open'); // 阻断背景滚动
+                document.body.classList.add('modal-open');
             }
         }
 
@@ -1126,18 +1633,16 @@
             const modal = document.getElementById(modalId);
             if (modal) {
                 modal.classList.remove('active');
-                document.body.classList.remove('modal-open'); // 恢复背景可滚动
+                document.body.classList.remove('modal-open');
             }
         }
 
-        // 点击背景遮罩关闭浮窗
         function closeModalOnBg(e, modalId) {
             if (e.target.classList.contains('standalone-modal-overlay') || e.target.classList.contains('modal-overlay')) {
                 closeInfoModal(modalId);
             }
         }
 
-        // 3. 用户留言提交
         function openModal() {
             openInfoModal('feedbackModal');
         }
@@ -1145,6 +1650,110 @@
         function submitObservation() {
             alert('感谢你的思考与留下观察记录！');
             closeInfoModal('feedbackModal');
+        }
+
+        // =========================================================
+        // 【全新轮播交互逻辑】支持鼠标拖拽、触摸滑动与左右箭头点击
+        // =========================================================
+        let currentSimIndex = 0;
+        const totalSimSlides = 4;
+
+        function updateSimCarousel() {
+            const track = document.getElementById('simTrack');
+            const dots = document.querySelectorAll('#simDots .sim-dot');
+            const prevBtn = document.getElementById('simPrevBtn');
+            const nextBtn = document.getElementById('simNextBtn');
+
+            if (track) {
+                track.style.transform = `translateX(-${currentSimIndex * 100}%)`;
+            }
+
+            // 更新指示点
+            dots.forEach((dot, idx) => {
+                if (idx === currentSimIndex) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+
+            // 控制左右箭头状态
+            if (prevBtn) prevBtn.disabled = (currentSimIndex === 0);
+            if (nextBtn) nextBtn.disabled = (currentSimIndex === totalSimSlides - 1);
+        }
+
+        function moveSimSlide(direction) {
+            currentSimIndex += direction;
+            if (currentSimIndex < 0) currentSimIndex = 0;
+            if (currentSimIndex >= totalSimSlides) currentSimIndex = totalSimSlides - 1;
+            updateSimCarousel();
+        }
+
+        // 滑拽手势绑定
+        function initSimCarousel() {
+            const wrapper = document.getElementById('simCarousel');
+            if (!wrapper) return;
+
+            let startX = 0;
+            let currentX = 0;
+            let isDragging = false;
+
+            // 触摸事件
+            wrapper.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                isDragging = true;
+            }, { passive: true });
+
+            wrapper.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                currentX = e.touches[0].clientX;
+            }, { passive: true });
+
+            wrapper.addEventListener('touchend', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                handleSwipeGesture(startX, currentX);
+            });
+
+            // 鼠标拖拽事件 (桌面端兼容)
+            wrapper.addEventListener('mousedown', (e) => {
+                startX = e.clientX;
+                isDragging = true;
+            });
+
+            wrapper.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                currentX = e.clientX;
+            });
+
+            wrapper.addEventListener('mouseup', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                handleSwipeGesture(startX, currentX);
+            });
+
+            wrapper.addEventListener('mouseleave', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    handleSwipeGesture(startX, currentX);
+                }
+            });
+
+            updateSimCarousel();
+        }
+
+        function handleSwipeGesture(start, end) {
+            const diffX = start - end;
+            // 触发滑动的最小阈值 35px
+            if (Math.abs(diffX) > 35 && end !== 0) {
+                if (diffX > 0) {
+                    // 向左滑动 -> 下一页
+                    moveSimSlide(1);
+                } else {
+                    // 向右滑动 -> 上一页
+                    moveSimSlide(-1);
+                }
+            }
         }
     </script>
 </body>
