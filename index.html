@@ -1,10 +1,2749 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-  <meta http-equiv="refresh" content="0; url=H5/">
-  <title>跳转中...</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>订单之外——新就业形态下的外卖骑手观察</title>
+    <style>
+        :root {
+            --primary-bg: #FAFAFA;
+            --accent-yellow: #FFCD38;
+            --accent-orange: #F59E0B;
+            --text-primary: #1F2937;
+            --text-secondary: #4B5563;
+            --text-muted: #9CA3AF;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow-subtle: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+            --shadow-card: 0 20px 30px -10px rgba(0, 0, 0, 0.08);
+            --radius-md: 16px;
+            --radius-lg: 24px;
+
+            /* 全局默认可控间距变量 */
+            --header-padding-top: 0rem;
+            --header-padding-bottom: 2rem;
+            --header-title-mt: 18vh;
+            --header-title-mb: 1.25rem;
+            
+            --hint-default-mt: 2.5rem;
+            --hint-default-mb: 2.5rem;
+            
+            --block-default-mt: 1.75rem;
+            --block-default-mb: 1.75rem;
+            
+            --media-default-mt: 1.75rem;
+            --media-default-mb: 1.75rem;
+            
+            --btn-default-mt: 1.5rem;
+            --btn-default-mb: 1.5rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+            /* 使用浏览器原生滚动；不启用强制分段吸附。 */
+            scroll-snap-type: none;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 顶部阅读进度：固定在 H5 外壳顶部，进度滑块以图片中心点对齐轨道位置。 */
+        .reading-progress {
+            position: fixed;
+            z-index: 90;
+            top: env(safe-area-inset-top, 0px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            height: 38px;
+            pointer-events: none;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0));
+        }
+
+        .reading-progress-track {
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            top: 50%;
+            height: 3px;
+            transform: translateY(-50%);
+            border-radius: 999px;
+            background: rgba(31, 41, 55, 0.16);
+        }
+
+        .reading-progress-fill {
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 0%;
+            border-radius: inherit;
+            background: var(--accent-yellow);
+            box-shadow: 0 0 5px rgba(255, 205, 56, 0.28);
+        }
+
+        .reading-progress-thumb {
+            position: absolute;
+            left: 0%;
+            top: 50%;
+            display: block;
+            width: clamp(25px, 6.7vw, 32px);
+            height: auto;
+            aspect-ratio: 755 / 804;
+            object-fit: contain;
+            object-position: center;
+            transform: translate(-50%, -50%);
+            user-select: none;
+            -webkit-user-drag: none;
+            transition: left 70ms linear;
+            will-change: left;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reading-progress-thumb { transition: none; }
+        }
+
+        body {
+            width: 100%;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            background-color: #E5E7EB;
+        }
+
+        /* 当独立浮窗打开时，禁止页面背景滚动 */
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        /* H5 Shell to simulate phone container on PC, full screen on mobile */
+        .h5-container {
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            background-color: #FFFFFF;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Fixed gradient overlay on bottom 25% of viewport */
+        .bottom-gradient-bg {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            height: 25vh;
+            background: linear-gradient(to bottom, rgba(255, 205, 56, 0) 0%, rgba(255, 205, 56, 0.18) 40%, rgba(255, 205, 56, 0.45) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Header / Cover Section with Background Image and Entry Animation */
+        .header-section {
+            width: 100%;
+            background-image: url('image/14.png');
+            background-position: top left;
+            background-size: 100% auto;
+            background-repeat: no-repeat;
+            padding-top: var(--pt, var(--header-padding-top));
+            padding-bottom: var(--pb, var(--header-padding-bottom));
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            
+            animation: headerBgFade 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            will-change: opacity, transform;
+        }
+
+        @keyframes headerBgFade {
+            0% {
+                opacity: 0;
+                transform: scale(1.03);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .main-title {
+            font-size: clamp(3rem, 12vw, 4.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-top: var(--mt, var(--header-title-mt));
+            margin-bottom: var(--mb, var(--header-title-mb));
+            line-height: 1.1;
+
+            animation: titleUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+            opacity: 0;
+            will-change: opacity, transform;
+        }
+
+        .sub-title {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #6B7280;
+            letter-spacing: 0.05em;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 0.75rem;
+
+            animation: titleUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+            opacity: 0;
+            will-change: opacity, transform;
+        }
+
+        @keyframes titleUp {
+            0% {
+                opacity: 0;
+                transform: translate3d(0, 30px, 0);
+            }
+            100% {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        .sub-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background-color: var(--accent-yellow);
+            border-radius: 2px;
+        }
+
+        /* Article Content Stream */
+        .content-body {
+            padding: 0 1.5rem 6rem;
+            position: relative;
+            z-index: 2;
+            min-width: 0;
+        }
+
+        /* 正文排版：段落统一宽度、节奏与留白，避免逐行文字松散漂浮 */
+        .text-block-group {
+            width: 100%;
+            max-width: 36rem;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 0.1rem;
+            padding-right: 0.1rem;
+        }
+
+        .text-block-group .text-line {
+            max-width: 34rem;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.9;
+            text-wrap: pretty;
+        }
+
+        /* 正文开篇：以标题式首句建立阅读层级，再过渡到群体描述 */
+        #section-2 {
+            margin-top: 0.8rem;
+            margin-bottom: 1.7rem;
+            padding: 1.25rem 0.2rem 1.35rem;
+            border-top: 1px solid #E5E7EB;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        #section-2 .text-line:first-child {
+            color: var(--text-primary);
+            font-size: 1.16rem;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+            margin-bottom: 0.15rem;
+        }
+
+        #section-2 .text-line:nth-child(2) {
+            color: #374151;
+            font-size: 1.04rem;
+            margin-bottom: 0.75rem;
+        }
+
+        #section-2 .text-line:nth-child(n+5) {
+            color: #273142;
+            font-weight: 650;
+        }
+
+        /* 职业大图之后的导语采用连续新闻正文，不再拆分成标语式短句。 */
+        .occupation-intro-copy {
+            margin-top: 1.15rem;
+            margin-bottom: 1.1rem;
+            padding: 0.15rem 0.1rem 0.45rem;
+            border: 0;
+            background: transparent;
+        }
+
+        .occupation-intro-copy .text-line {
+            color: #374151;
+            text-align: justify;
+            text-indent: 2em;
+            font-size: 0.96rem;
+            line-height: 1.95;
+            letter-spacing: 0.005em;
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        /* Scroll reveal animations */
+        .reveal-item {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+
+        .reveal-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* 尚未进入视口的淡入元素不可点击，避免隐藏提示提前触发翻页。 */
+        .reveal-item:not(.visible) {
+            pointer-events: none;
+        }
+
+        /* Paragraph styles: 居中显示 */
+        .text-line {
+            font-size: 1.05rem;
+            line-height: 1.85;
+            color: var(--text-secondary);
+            margin-bottom: 0.2rem;
+            text-align: center;
+        }
+
+        /* 独立可控间距：文本块组 */
+        .text-block-group {
+            margin-top: var(--mt, var(--block-default-mt));
+            margin-bottom: var(--mb, var(--block-default-mb));
+        }
+
+        /* 独立可控间距：向下滑动提示 */
+        .scroll-down-hint {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: var(--mt, var(--hint-default-mt));
+            margin-bottom: var(--mb, var(--hint-default-mb));
+            color: #9CA3AF;
+            font-size: 0.875rem;
+            letter-spacing: 0.1em;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            outline: none;
+        }
+
+        .scroll-down-hint:focus-visible {
+            outline: 2px solid #D9A900;
+            outline-offset: 5px;
+            border-radius: 8px;
+        }
+
+        .scroll-down-hint span,
+        .scroll-down-hint .arrow {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 上一层透明点击热区罩 (伪元素层级类) */
+        .scroll-down-hint::before {
+            content: '';
+            position: absolute;
+            top: var(--hit-pt, -70px);
+            bottom: var(--hit-pb, -70px);
+            left: -60px;
+            right: -60px;
+            z-index: 10;
+            background: transparent;
+        }
+
+        .scroll-down-hint .arrow {
+            width: 16px;
+            height: 16px;
+            margin-top: 6px;
+            border-right: 2px solid var(--accent-yellow);
+            border-bottom: 2px solid var(--accent-yellow);
+            transform: rotate(45deg);
+            animation: bounce 1.8s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(45deg); }
+            40% { transform: translateY(6px) rotate(45deg); }
+            60% { transform: translateY(3px) rotate(45deg); }
+        }
+
+        /* 圆形蒙版图片组 */
+        .circle-mask-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: var(--mt, 2.5rem);
+            margin-bottom: var(--mb, 1.5rem);
+            padding: 0 0.2rem;
+            gap: 12px;
+        }
+
+        .circle-avatar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            cursor: pointer;
+            transition: transform 0.25s ease;
+        }
+
+        .circle-avatar-item:active {
+            transform: scale(0.95);
+        }
+
+        .circle-avatar {
+            width: 125px;
+            height: 125px;
+            border-radius: 50%;
+            border: 4px solid #FFFFFF;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            position: relative;
+            overflow: hidden;
+            background-color: #F3F4F6;
+        }
+
+        .circle-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .circle-avatar-outer-label {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            letter-spacing: 0.02em;
+            line-height: 1.2;
+        }
+
+        .avatar-click-guide {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #6B7280;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            margin: 0.5rem 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .avatar-click-guide::before,
+        .avatar-click-guide::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 1px;
+            background-color: #D1D5DB;
+        }
+
+        /* 独立可控间距：媒体容器（包含图片18.png）与视频容器 */
+        .media-container-16-9,
+        .video-container-16-9 {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: var(--mt, var(--media-default-mt));
+            margin-bottom: var(--mb, var(--media-default-mb));
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .media-container-16-9 img,
+        .video-container-16-9 video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: var(--radius-md);
+        }
+
+        /* 补全 X 轴与 Y 轴实线 */
+        .chart-card-container {
+            width: 100%;
+            background: #FFFFFF;
+            border-radius: var(--radius-md);
+            padding: 1.35rem 1.15rem 1.05rem;
+            margin-top: var(--mt, var(--media-default-mt));
+            margin-bottom: var(--mb, var(--media-default-mb));
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid #F3F4F6;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 0.25rem;
+            letter-spacing: 0.02em;
+        }
+
+        .chart-subtitle {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .chart-layout {
+            display: grid;
+            grid-template-columns: 32px minmax(0, 1fr);
+            column-gap: 8px;
+            align-items: stretch;
+        }
+
+        .y-axis-labels {
+            height: 196px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 2px 0 0;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .chart-plot {
+            height: 196px;
+            position: relative;
+            border-left: 2px solid #9CA3AF;
+            border-bottom: 2px solid #9CA3AF;
+            isolation: isolate;
+        }
+
+        .chart-grid-lines {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .chart-grid-lines span {
+            display: block;
+            width: 100%;
+            height: 0;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .chart-grid-lines span:last-child {
+            border-top-color: #9CA3AF;
+        }
+
+        .chart-bars {
+            position: absolute;
+            inset: 0 3% 0 3%;
+            display: flex;
+            align-items: stretch;
+            justify-content: space-evenly;
+            z-index: 1;
+        }
+
+        .chart-column {
+            position: relative;
+            height: 100%;
+            width: 38%;
+            min-width: 0;
+        }
+
+        .bar-value {
+            position: absolute;
+            left: 50%;
+            bottom: calc(var(--bar-height) + 6px);
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            line-height: 1;
+            font-weight: 800;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .bar-shape {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            width: min(48px, 66%);
+            height: var(--bar-height);
+            border-radius: 7px 7px 0 0;
+            transform: translateX(-50%) scaleY(0);
+            transform-origin: bottom;
+            transition: transform 1.15s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 5px rgba(31, 41, 55, 0.08);
+        }
+
+        /* 两根柱体均以纵轴最大值 4 亿人为基准，比例分别为 70% 与 80% */
+        .bar-2025 {
+            --bar-height: 70%;
+            background: linear-gradient(180deg, #FFE082 0%, var(--accent-yellow) 100%);
+        }
+
+        .bar-2026 {
+            --bar-height: 80%;
+            background: linear-gradient(180deg, #FBBF24 0%, var(--accent-orange) 100%);
+        }
+
+        .chart-card-container.visible .bar-shape {
+            transform: translateX(-50%) scaleY(1);
+        }
+
+        .x-axis-labels {
+            display: grid;
+            grid-template-columns: 32px minmax(0, 1fr) minmax(0, 1fr);
+            column-gap: 8px;
+            padding-top: 10px;
+        }
+
+        .x-axis-label {
+            font-size: 0.8rem;
+            font-weight: 650;
+            color: var(--text-secondary);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .chart-source-note {
+            margin-top: 0.85rem;
+            font-size: 0.72rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* 校园观察：页面正文卡片排版 */
+        .campus-observation-card {
+            background: #F9FAFB;
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1.25rem 0.5rem;
+            border: 1px solid #E5E7EB;
+            border-top: 4px solid var(--accent-yellow);
+            margin-top: var(--mt, var(--block-default-mt));
+            margin-bottom: var(--mb, var(--block-default-mb));
+        }
+
+        .campus-card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed #E5E7EB;
+        }
+
+        .campus-item-text {
+            font-size: 0.95rem;
+            line-height: 1.75;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+            text-align: justify;
+        }
+
+        .editorial-section {
+            margin-top: 2.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-kicker {
+            margin-bottom: 0.45rem;
+            color: #9A7200;
+            font-size: 0.76rem;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: 0.12em;
+        }
+
+        .section-title {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 800;
+            line-height: 1.45;
+            text-align: center;
+        }
+
+        .editorial-copy {
+            margin: 0 0 0.85rem;
+            color: var(--text-secondary);
+            font-size: 0.98rem;
+            line-height: 1.9;
+            text-align: justify;
+            overflow-wrap: anywhere;
+        }
+
+        .editorial-copy:last-child { margin-bottom: 0; }
+
+        .stat-highlight {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.25rem 0;
+            padding: 1.1rem 1rem;
+            border: 1px solid #F3E3A9;
+            border-left: 4px solid var(--accent-yellow);
+            border-radius: var(--radius-md);
+            background: #FFFCF1;
+        }
+
+        .stat-highlight-value {
+            flex: 0 0 auto;
+            color: #8A6500;
+            font-size: 1.65rem;
+            font-weight: 850;
+            line-height: 1.1;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-highlight-copy {
+            color: var(--text-secondary);
+            font-size: 0.86rem;
+            line-height: 1.65;
+        }
+
+        .flow-strip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            margin: 1.2rem 0;
+            padding: 0.9rem 0.45rem;
+            border-radius: 12px;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+        }
+
+        .flow-step {
+            flex: 1 1 0;
+            min-width: 0;
+            padding: 0.65rem 0.25rem;
+            border-radius: 8px;
+            background: #FFFFFF;
+            color: var(--text-primary);
+            font-size: 0.78rem;
+            font-weight: 750;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .flow-arrow {
+            flex: 0 0 auto;
+            color: #A97900;
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        .video-heading {
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text-primary);
+            font-size: 1.08rem;
+            font-weight: 800;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        .video-transcript {
+            margin: 1rem 0 1.5rem;
+            padding: 1rem 1.05rem;
+            border-left: 3px solid var(--accent-yellow);
+            background: #F9FAFB;
+            border-radius: 0 12px 12px 0;
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            line-height: 1.9;
+            text-align: justify;
+        }
+
+        .quote-item {
+            margin-bottom: 0.8rem;
+            padding: 1rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            background: #FFFFFF;
+        }
+
+        .quote-role {
+            margin-bottom: 0.45rem;
+            color: #8A6500;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+        }
+
+        .quote-content {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        .source-link {
+            display: inline-block;
+            margin-top: 0.55rem;
+            color: #876300;
+            font-size: 0.84rem;
+            font-weight: 700;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .closing-thought {
+            margin-top: 1.25rem;
+            padding: 1.15rem 1rem;
+            border-radius: 12px;
+            background: #FFFAE9;
+            border: 1px solid #F3E3A9;
+        }
+
+        .data-disclaimer-note {
+            font-size: 0.78rem;
+            font-style: italic;
+            color: #4B5563;
+            text-align: left;
+            line-height: 1.5;
+            margin-top: 0.8rem;
+            margin-bottom: var(--mb, var(--block-default-mb));
+            padding: 0 0.2rem;
+        }
+
+        /* 独立可控间距：交互按钮 */
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 0.9rem 1.25rem;
+            margin-top: var(--mt, var(--btn-default-mt));
+            margin-bottom: var(--mb, var(--btn-default-mb));
+            background: #111827;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+            transition: all 0.25s ease;
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+            background: #1F2937;
+        }
+
+        .action-btn .btn-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-yellow);
+        }
+
+        /* 全屏模态弹窗 (Modal) */
+        .standalone-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            -webkit-backface-visibility: hidden;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+            padding: 1.25rem;
+        }
+
+        .standalone-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-popup-card {
+            width: 100%;
+            max-width: 420px;
+            max-height: 85vh;
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            transform: translate3d(0, 24px, 0);
+            will-change: transform, opacity;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .standalone-modal-overlay.active .modal-popup-card {
+            transform: translate3d(0, 0, 0);
+        }
+
+        .modal-popup-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-bottom: 1px solid #E5E7EB;
+            padding-bottom: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .modal-popup-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .modal-close-icon {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #F3F4F6;
+            border: none;
+            color: #6B7280;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-close-icon:hover {
+            background: #E5E7EB;
+            color: #111827;
+        }
+
+        .info-card-item {
+            position: relative;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-top: 4px solid var(--accent-yellow);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+        }
+
+        .info-card-item-text {
+            font-size: 0.92rem;
+            line-height: 1.65;
+            color: #374151;
+            text-align: left;
+        }
+
+        /* 微信/H5 风格：全新轮播模拟交互弹窗 */
+        .sim-carousel-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            touch-action: pan-y;
+        }
+
+        .sim-carousel-track {
+            display: flex;
+            width: 100%;
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: transform;
+        }
+
+        .sim-slide {
+            flex: 0 0 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 1:1 图片展示容器 */
+        .sim-image-box {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #F3F4F6;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 0.85rem;
+        }
+
+        .sim-image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 第一人称沉浸式文字卡片 */
+        .sim-text-card {
+            width: 100%;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-top: 3.5px solid var(--accent-yellow);
+            border-radius: 12px;
+            padding: 0.95rem 1rem;
+            min-height: 110px;
+        }
+
+        .sim-step-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #8A6500;
+            background: #FEF3C7;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 0.4rem;
+        }
+
+        .sim-step-quote {
+            font-size: 0.92rem;
+            line-height: 1.65;
+            color: var(--text-primary);
+            text-align: justify;
+        }
+
+        /* 底部导航区：左右箭头按钮与指示器 */
+        .sim-controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding: 0 0.2rem;
+        }
+
+        .sim-arrow-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 1.5px solid #E5E7EB;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sim-arrow-btn:active {
+            transform: scale(0.92);
+            background: var(--accent-yellow);
+            border-color: var(--accent-yellow);
+        }
+
+        .sim-arrow-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .sim-dots-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sim-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #D1D5DB;
+            transition: all 0.3s ease;
+        }
+
+        .sim-dot.active {
+            width: 20px;
+            border-radius: 10px;
+            background: var(--accent-yellow);
+        }
+
+        /* Modal Overlay for Observation Form */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            width: 88%;
+            max-width: 400px;
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-card);
+            position: relative;
+        }
+
+        .modal-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .modal-textarea {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            resize: none;
+            outline: none;
+            margin-bottom: 1rem;
+            font-family: inherit;
+        }
+
+        .modal-textarea:focus {
+            border-color: var(--accent-yellow);
+        }
+
+        .modal-submit {
+            width: 100%;
+            background: var(--accent-yellow);
+            color: #111827;
+            font-weight: 600;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    
+
+        /* =========================================================
+           H5 职业详情交互区：小头像阶梯入场 / 图片与信息卡独立分层
+           Layer 0：页面与插画衬底；Layer 1：职业插图；Layer 2：独立信息卡
+           ========================================================= */
+        .occupation-explorer {
+            position: relative;
+            width: 100%;
+            touch-action: pan-y;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .circle-mask-group {
+            position: relative;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 0 0.1rem;
+            margin-top: var(--mt, 2.5rem);
+            margin-bottom: var(--mb, 1.05rem);
+        }
+
+        .circle-avatar-item {
+            appearance: none;
+            -webkit-appearance: none;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: inherit;
+            padding: 0;
+            min-width: 0;
+            flex: 1 1 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            opacity: 1;
+            filter: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: opacity 300ms ease, filter 300ms ease;
+        }
+
+        .circle-avatar-item:active {
+            transform: none;
+        }
+
+        .circle-avatar-item:focus-visible .circle-avatar {
+            outline: 3px solid rgba(245, 158, 11, 0.7);
+            outline-offset: 3px;
+        }
+
+        .circle-mask-group.visible .circle-avatar-item {
+            animation: occupationAvatarHopIn 680ms cubic-bezier(0.2, 0.85, 0.24, 1) both;
+        }
+
+        .circle-mask-group.visible .circle-avatar-item:nth-child(1) { --avatar-enter-x: -42px; animation-delay: 0ms; }
+        .circle-mask-group.visible .circle-avatar-item:nth-child(2) { --avatar-enter-x: -24px; animation-delay: 400ms; }
+        .circle-mask-group.visible .circle-avatar-item:nth-child(3) { --avatar-enter-x: -8px; animation-delay: 800ms; }
+
+        @keyframes occupationAvatarHopIn {
+            0% { opacity: 0; transform: translate3d(var(--avatar-enter-x, -24px), 22px, 0) scale(0.90); }
+            52% { opacity: 1; transform: translate3d(0, -10px, 0) scale(1.035); }
+            72% { transform: translate3d(0, 3px, 0) scale(0.99); }
+            100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+        }
+
+        .circle-avatar {
+            /* 原 125px 的约 70%；窄屏时按容器宽度收缩 */
+            width: clamp(74px, 22.5vw, 88px);
+            height: clamp(74px, 22.5vw, 88px);
+            flex: 0 0 auto;
+            border-radius: 50%;
+            border: 3px solid #FFFFFF;
+            box-shadow: 0 7px 17px rgba(17, 24, 39, 0.12);
+            position: relative;
+            overflow: hidden;
+            background-color: #F3F4F6;
+            transform: scale(1);
+            transform-origin: center;
+            transition: transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1), border-color 300ms ease, box-shadow 300ms ease, filter 300ms ease;
+        }
+
+        .circle-avatar img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .circle-avatar-item.is-selected .circle-avatar {
+            transform: scale(1.15);
+            border-color: var(--accent-yellow);
+            box-shadow: 0 9px 21px rgba(138, 101, 0, 0.2);
+        }
+
+        .circle-avatar-item.is-muted {
+            opacity: 0.60;
+            filter: saturate(0.82);
+        }
+
+        .circle-avatar-outer-label {
+            display: block;
+            width: 100%;
+            margin-top: 9px;
+            font-size: clamp(0.76rem, 3.2vw, 0.88rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+            text-align: center;
+            letter-spacing: 0;
+            transition: color 280ms ease, opacity 280ms ease;
+        }
+
+        .circle-avatar-item.is-muted .circle-avatar-outer-label {
+            color: #8A929E;
+        }
+
+        .circle-avatar-item.is-selected .circle-avatar-outer-label {
+            color: #795900;
+        }
+
+        .avatar-click-guide {
+            margin-top: 0.3rem;
+            margin-bottom: 1.1rem;
+            font-size: 0.8rem;
+            letter-spacing: 0.035em;
+        }
+
+        .occupation-detail-stage {
+            position: relative;
+            isolation: isolate;
+            width: 100%;
+            margin-top: 1.1rem;
+            margin-bottom: 2rem;
+            padding: 0 0 0.35rem;
+            overflow: visible;
+            touch-action: pan-y;
+        }
+
+        .occupation-detail-visual {
+            position: relative;
+            z-index: 1;
+            /* Break out of the text column to the exact H5 shell edges. */
+            width: calc(100% + 3rem);
+            margin-left: -1.5rem;
+            height: clamp(285px, 90vw, 420px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: linear-gradient(180deg, rgba(255, 250, 232, 0.55), rgba(255, 255, 255, 0));
+        }
+
+        .occupation-art-backdrop {
+            position: absolute;
+            z-index: 0;
+            left: 0;
+            right: 0;
+            top: 5%;
+            bottom: 3%;
+            border-radius: 48% 52% 58% 42% / 48% 43% 57% 52%;
+            background: radial-gradient(circle at 46% 44%, rgba(255, 224, 130, 0.36), rgba(255, 205, 56, 0.13) 58%, rgba(255, 205, 56, 0.025) 100%);
+            transform: rotate(-5deg);
+            pointer-events: none;
+        }
+
+        .occupation-detail-image {
+            position: relative;
+            z-index: 1;
+            display: block;
+            width: 100%;
+            height: 100%;
+            max-width: none;
+            object-fit: contain;
+            object-position: center bottom;
+            filter: drop-shadow(0 12px 14px rgba(31, 41, 55, 0.08));
+            will-change: transform, opacity;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .occupation-detail-image.is-staged,
+        .occupation-detail-card.is-staged {
+            opacity: 0;
+        }
+
+        .occupation-detail-card {
+            position: relative;
+            z-index: 2;
+            width: calc(100% - 1.15rem);
+            margin: -2.35rem auto 0;
+            padding: 1rem 1.05rem 1.1rem;
+            background: rgba(255, 255, 255, 0.97);
+            border: 1px solid rgba(229, 231, 235, 0.95);
+            border-top: 4px solid var(--accent-yellow);
+            border-radius: 17px;
+            box-shadow: 0 15px 32px rgba(31, 41, 55, 0.12);
+            backdrop-filter: blur(7px);
+            -webkit-backdrop-filter: blur(7px);
+            will-change: transform, opacity;
+        }
+
+        .occupation-detail-card-topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+            margin-bottom: 0.58rem;
+        }
+
+        .occupation-detail-kicker {
+            color: #8A6500;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+        }
+
+        .occupation-detail-index {
+            flex: 0 0 auto;
+            color: #9CA3AF;
+            font-size: 0.7rem;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .occupation-detail-title {
+            margin: 0 0 0.55rem;
+            color: var(--text-primary);
+            font-size: 1.12rem;
+            font-weight: 850;
+            line-height: 1.4;
+            text-align: left;
+        }
+
+        .occupation-detail-lead {
+            margin: 0 0 0.45rem;
+            color: #303846;
+            font-size: 0.94rem;
+            font-weight: 750;
+            line-height: 1.65;
+            text-align: left;
+        }
+
+        .occupation-detail-copy {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            line-height: 1.8;
+            text-align: justify;
+            overflow-wrap: anywhere;
+        }
+
+        /* 插图：左右交替入场，同时从小放大；退场向相同方向缩小离开 */
+        @keyframes occupationImageInLeft {
+            0% { opacity: 0; transform: translate3d(-64px, 7px, 0) scale(0.74); }
+            72% { opacity: 1; transform: translate3d(5px, 0, 0) scale(1.025); }
+            100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+        }
+        @keyframes occupationImageInRight {
+            0% { opacity: 0; transform: translate3d(64px, 7px, 0) scale(0.74); }
+            72% { opacity: 1; transform: translate3d(-5px, 0, 0) scale(1.025); }
+            100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+        }
+        @keyframes occupationImageOutLeft {
+            0% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+            100% { opacity: 0; transform: translate3d(-62px, 5px, 0) scale(0.72); }
+        }
+        @keyframes occupationImageOutRight {
+            0% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+            100% { opacity: 0; transform: translate3d(62px, 5px, 0) scale(0.72); }
+        }
+
+        /* 文字框独立于大图：首次从上向下进入；切换时旧框向下缩小退场，新框从下向上放大进入。 */
+        @keyframes occupationCardInitialDown {
+            0% { opacity: 0; transform: translate3d(0, -42px, 0) scale(0.82); }
+            76% { opacity: 1; transform: translate3d(0, 4px, 0) scale(1.015); }
+            100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+        }
+        @keyframes occupationCardSwitchInUp {
+            0% { opacity: 0; transform: translate3d(0, 42px, 0) scale(0.78); }
+            100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+        }
+        @keyframes occupationCardSwitchOutDown {
+            0% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+            100% { opacity: 0; transform: translate3d(0, 44px, 0) scale(0.72); }
+        }
+
+        .occupation-detail-image.is-entering.enter-left {
+            animation: occupationImageInLeft 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .occupation-detail-image.is-entering.enter-right {
+            animation: occupationImageInRight 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .occupation-detail-image.is-leaving.exit-left {
+            animation: occupationImageOutLeft 280ms cubic-bezier(0.4, 0, 1, 1) both;
+        }
+        .occupation-detail-image.is-leaving.exit-right {
+            animation: occupationImageOutRight 280ms cubic-bezier(0.4, 0, 1, 1) both;
+        }
+        .occupation-detail-card.is-entering.initial-down {
+            animation: occupationCardInitialDown 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .occupation-detail-card.is-entering.enter-left,
+        .occupation-detail-card.is-entering.enter-right {
+            animation: occupationCardSwitchInUp 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .occupation-detail-card.is-leaving.exit-left,
+        .occupation-detail-card.is-leaving.exit-right {
+            animation: occupationCardSwitchOutDown 280ms cubic-bezier(0.4, 0, 1, 1) both;
+        }
+
+        @media (max-width: 360px) {
+            .circle-mask-group { gap: 4px; }
+            .circle-avatar { width: 74px; height: 74px; }
+            .circle-avatar-outer-label { font-size: 0.73rem; }
+            .occupation-detail-card { width: calc(100% - 0.6rem); padding: 0.9rem 0.9rem 1rem; }
+            .occupation-detail-visual { width: calc(100% + 3rem); margin-left: -1.5rem; height: 250px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .circle-mask-group.visible .circle-avatar-item,
+            .occupation-detail-image.is-entering,
+            .occupation-detail-image.is-leaving,
+            .occupation-detail-card.is-entering,
+            .occupation-detail-card.is-leaving {
+                animation-duration: 0.01ms !important;
+                animation-delay: 0ms !important;
+            }
+            .circle-avatar, .circle-avatar-item, .occupation-detail-card {
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+    
+
+        /* 本次更新：顶部背景音乐控制 */
+        .music-toggle {
+            position: fixed;
+            z-index: 91;
+            top: calc(env(safe-area-inset-top, 0px) + 40px);
+            right: max(12px, calc((100vw - 480px) / 2 + 12px));
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(31, 41, 55, 0.1);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.94);
+            color: #374151;
+            box-shadow: 0 3px 12px rgba(31, 41, 55, 0.12);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+        }
+        .music-toggle:active { transform: scale(0.94); }
+        .music-toggle:focus-visible { outline: 2px solid #D9A900; outline-offset: 3px; }
+        .music-toggle svg { overflow: visible; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .music-toggle .speaker-body { fill: currentColor; stroke: none; }
+        .music-toggle .speaker-off { display: none; }
+        .music-toggle.is-muted { color: #6B7280; background: rgba(249, 250, 251, 0.96); }
+        .music-toggle.is-muted .speaker-wave { display: none; }
+        .music-toggle.is-muted .speaker-off { display: block; }
+
+        /* 正文与统计文本框之间的图片：按原始比例响应式缩放。 */
+        .xjy-illustration {
+            width: 100%;
+            max-width: 36rem;
+            margin: 1.05rem auto 1.3rem;
+            padding: 0;
+        }
+        .xjy-illustration img {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            aspect-ratio: 1579 / 1264;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        /* 4 根柱体对应 2023—2026 年；2023 的高度表达“超过 2 亿”的下限。 */
+        .chart-bars {
+            inset: 0 1.5% 0 1.5%;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            column-gap: 0.25rem;
+        }
+        .chart-column { width: auto; }
+        .bar-value {
+            font-size: clamp(0.62rem, 2.6vw, 0.82rem);
+            letter-spacing: -0.02em;
+        }
+        .bar-2023 {
+            --bar-height: 50%;
+            background: linear-gradient(180deg, #FEF3C7 0%, #FDE68A 100%);
+        }
+        .bar-2024 {
+            --bar-height: 60%;
+            background: linear-gradient(180deg, #FDE68A 0%, #FCD34D 100%);
+        }
+        .bar-2025 {
+            --bar-height: 70%;
+            background: linear-gradient(180deg, #FFE082 0%, var(--accent-yellow) 100%);
+        }
+        .bar-2026 {
+            --bar-height: 80%;
+            background: linear-gradient(180deg, #FBBF24 0%, var(--accent-orange) 100%);
+        }
+        .x-axis-labels {
+            margin-left: 40px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            column-gap: 0;
+        }
+        .x-axis-labels > span[aria-hidden="true"] { display: none; }
+        .x-axis-label {
+            white-space: normal;
+            overflow-wrap: anywhere;
+            font-size: clamp(0.58rem, 2.4vw, 0.75rem);
+            line-height: 1.25;
+        }
+        .chart-source-note a {
+            color: #876300;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        /* 全文叙述性正文统一居中；标题、图表轴标签等保留各自排版规则。 */
+        .content-body .text-line,
+        .content-body .occupation-intro-copy .text-line,
+        .content-body .editorial-copy,
+        .content-body .stat-highlight-copy,
+        .content-body .data-disclaimer-note,
+        .content-body .campus-item-text,
+        .content-body .video-transcript,
+        .content-body .quote-content,
+        .content-body .occupation-detail-lead,
+        .content-body .occupation-detail-copy,
+        .content-body .sim-step-quote,
+        .content-body .info-card-item-text {
+            text-align: center !important;
+        }
+
+        @media (max-width: 360px) {
+            .chart-card-container { padding-left: 0.8rem; padding-right: 0.8rem; }
+            .chart-layout { grid-template-columns: 26px minmax(0, 1fr); column-gap: 6px; }
+            .x-axis-labels { margin-left: 32px; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 0; }
+            .bar-value { font-size: 0.62rem; }
+        }
+
+    </style>
 </head>
 <body>
-  <p>正在跳转到页面，如果没有自动跳转请点击 <a href="H5/">这里</a>。</p>
+    <div class="reading-progress">
+        <div
+            class="reading-progress-track"
+            id="reading-progress-track"
+            role="progressbar"
+            aria-label="页面阅读进度"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+        >
+            <div class="reading-progress-fill" id="reading-progress-fill"></div>
+            <img class="reading-progress-thumb" id="reading-progress-thumb" src="image/prog-bar.png" alt="" draggable="false">
+        </div>
+    </div>
+
+    <button class="music-toggle is-muted" id="music-toggle" type="button" aria-label="开启背景音乐" aria-pressed="false" title="尝试自动播放失败时，点击开启音乐">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+            <path class="speaker-body" d="M3 9v6h4l5 4V5L7 9H3Z"></path>
+            <path class="speaker-wave" d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12"></path>
+            <path class="speaker-off" d="m16 9 5 6m0-6-5 6"></path>
+        </svg>
+    </button>
+    <audio id="background-music" src="audio/BGM.mp3" loop preload="auto"></audio>
+
+    <div class="h5-container">
+        <div class="bottom-gradient-bg"></div>
+
+        <!-- Header Title Section -->
+        <header class="header-section">
+            <h1 class="main-title" style="--mt: 18vh;">订单之外</h1>
+            <div class="sub-title">新就业形态下的外卖骑手观察</div>
+        </header>
+
+        <!-- Article Content -->
+        <main class="content-body">
+
+            <!-- Section 1：第一个向下滑动提示 -->
+            <div class="reveal-item scroll-down-hint" style="--mt: -8.5rem; --mb: 8.5rem;" role="button" tabindex="0" aria-label="向下翻页，继续阅读">
+                <span>↓ 向下滑动阅读</span>
+                <div class="arrow"></div>
+            </div>
+
+            <!-- 第二页（正文起点） -->
+            <div id="section-2" class="text-block-group">
+                <p class="text-line reveal-item">在城市的道路上</p>
+                <p class="text-line reveal-item">有一群人正在以另一种方式工作。</p>
+                <p class="text-line reveal-item">他们不坐在固定的办公室里</p>
+                <p class="text-line reveal-item">也不按传统的朝九晚五打卡。</p>
+                <p class="text-line reveal-item">网约车司机、快递分拣员、外卖骑手</p>
+                <p class="text-line reveal-item">他们构成了当下中国规模庞大的灵活就业群体。</p>
+            </div>
+
+            <!-- 职业图谱交互区：头像选择、插图层与独立信息层 -->
+            <section class="occupation-explorer" id="occupation-explorer" aria-label="三类新就业形态职业观察">
+                <div class="circle-mask-group reveal-item" role="group" aria-label="选择职业">
+                    <button class="circle-avatar-item is-selected" type="button" data-occupation="0" aria-pressed="true" aria-label="查看网约车司机详情">
+                        <span class="circle-avatar">
+                            <img src="image/2.jpeg" alt="网约车司机">
+                        </span>
+                        <span class="circle-avatar-outer-label">网约车司机</span>
+                    </button>
+
+                    <button class="circle-avatar-item" type="button" data-occupation="1" aria-pressed="false" aria-label="查看外卖骑手详情">
+                        <span class="circle-avatar">
+                            <img src="image/4.jpeg" alt="外卖骑手">
+                        </span>
+                        <span class="circle-avatar-outer-label">外卖骑手</span>
+                    </button>
+
+                    <button class="circle-avatar-item" type="button" data-occupation="2" aria-pressed="false" aria-label="查看快递分拣员详情">
+                        <span class="circle-avatar">
+                            <img src="image/3.jpeg" alt="快递分拣员">
+                        </span>
+                        <span class="circle-avatar-outer-label">快递分拣员</span>
+                    </button>
+                </div>
+
+                <div class="reveal-item avatar-click-guide">
+                    点击头像或左右滑动，切换职业详情
+                </div>
+
+                <!-- 图片与职业说明先完整呈现；导语正文放在大图动效之后。 -->
+                <!-- 图片层为独立的第 1 层；文本卡片为独立叠加的第 2 层 -->
+                <section class="occupation-detail-stage reveal-item" id="occupation-detail-stage" aria-label="职业详情" aria-live="polite">
+                    <div class="occupation-detail-visual" aria-hidden="true">
+                        <div class="occupation-art-backdrop"></div>
+                        <img
+                            class="occupation-detail-image is-staged enter-left"
+                            id="occupation-detail-image"
+                            src="image/dri.png"
+                            alt=""
+                            decoding="async"
+                        >
+                    </div>
+
+                    <article class="occupation-detail-card is-staged enter-right" id="occupation-detail-card">
+                        <div class="occupation-detail-card-topline">
+                            <span class="occupation-detail-kicker" id="occupation-detail-kicker">职业观察 / 01</span>
+                            <span class="occupation-detail-index" id="occupation-detail-index">01 — 03</span>
+                        </div>
+                        <h3 class="occupation-detail-title" id="occupation-detail-title">网约车司机观察</h3>
+                        <p class="occupation-detail-lead" id="occupation-detail-lead">接收出行需求，完成接驾与运输。</p>
+                        <p class="occupation-detail-copy" id="occupation-detail-copy">一趟行程需要经过接单、接驾、行驶与送达。订单需求、道路状况和平台规则，共同影响着司机的工作节奏。</p>
+                    </article>
+                </section>
+
+                <div class="text-block-group occupation-intro-copy">
+                    <p class="text-line reveal-item">随着平台经济的发展，网约车司机、外卖骑手和快递分拣员逐渐成为城市日常运转中常见的劳动者。三类职业的工作内容各不相同，但都与平台运营和订单流转密切相关。平台为劳动者提供了不同的就业入口，也使接单方式、工作时间与收入形成了各自不同的运行机制。下文将从这三类职业出发，观察新就业形态在现实生活中的具体呈现。</p>
+                </div>
+            </section>
+
+            <!-- 导语之后唯一保留的提示：进入下一板块。 -->
+            <div class="reveal-item scroll-down-hint" role="button" tabindex="0" aria-label="向下翻页，进入宏观社会观察">
+                <span>↓ 向下滑动阅读</span>
+                <div class="arrow"></div>
+            </div>
+
+            <!-- 图片 18.png -->
+            <div class="media-container-16-9 reveal-item" style="background: transparent; box-shadow: none; margin-left: -1.5rem; margin-right: -1.5rem; width: calc(100% + 3rem); border-radius: 0;">
+                <img src="image/18.png" alt="新就业形态观察" style="border-radius: 0;">
+            </div>
+
+            <section class="editorial-section reveal-item" aria-labelledby="macro-section-title">
+                <div class="section-kicker">宏观社会观察</div>
+                <h2 class="section-title" id="macro-section-title">一笔订单 连接起怎样的劳动</h2>
+                <p class="editorial-copy">外卖订单出现在手机屏幕上，完成订单的劳动却发生在线下。</p>
+                <p class="editorial-copy">从消费者下单、商家备餐，到配送人员取餐和交付，平台将分散的需求组织起来，也让不同环节的劳动产生联系。</p>
+                <p class="editorial-copy reveal-item">这种联系并不只存在于外卖行业。出行服务、快递物流等领域，也在以各自不同的方式，将市场需求转化为具体的工作任务。</p>
+                <figure class="xjy-illustration reveal-item" aria-label="正文配图">
+                    <img src="image/XJY-01.png" width="1579" height="1264" alt="正文配图 XJY-01" loading="lazy" decoding="async">
+                </figure>
+                <div class="stat-highlight" role="note" aria-label="平台骑手数据">
+                    <div class="stat-highlight-value">约745万人</div>
+                    <div class="stat-highlight-copy">美团2023年公开报告显示，2023年通过美团平台获得收入的骑手约745万人。该口径不等同于全职骑手人数或新增岗位数。</div>
+                </div>
+            </section>
+
+            <!-- 动态柱状图：2023—2026年规模趋势 -->
+            <div class="chart-card-container reveal-item" role="group" aria-label="中国灵活就业人员规模变化：2023年超过2亿人；2024年约2.4亿人；2025年约2.8亿人；2026年预计约3.2亿人。纵轴单位为亿人，范围为0至4亿人。2023年柱高仅按2.0亿人下限展示，不代表精确值。">
+                <div class="chart-title">灵活就业人数</div>
+                <div class="chart-subtitle">单位：亿人</div>
+                <div class="chart-layout">
+                    <div class="y-axis-labels" aria-hidden="true">
+                        <span>4.0</span>
+                        <span>3.0</span>
+                        <span>2.0</span>
+                        <span>1.0</span>
+                        <span>0</span>
+                    </div>
+                    <div class="chart-plot" aria-hidden="true">
+                        <div class="chart-grid-lines">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <div class="chart-bars">
+                            <div class="chart-column">
+                                <div class="bar-value" style="--bar-height:50%">2.0+</div>
+                                <div class="bar-shape bar-2023"></div>
+                            </div>
+                            <div class="chart-column">
+                                <div class="bar-value" style="--bar-height:60%">2.4</div>
+                                <div class="bar-shape bar-2024"></div>
+                            </div>
+                            <div class="chart-column">
+                                <div class="bar-value" style="--bar-height:70%">2.8</div>
+                                <div class="bar-shape bar-2025"></div>
+                            </div>
+                            <div class="chart-column">
+                                <div class="bar-value" style="--bar-height:80%">3.2</div>
+                                <div class="bar-shape bar-2026"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="x-axis-labels">
+                    <span aria-hidden="true"></span>
+                    <div class="x-axis-label">2023年</div>
+                    <div class="x-axis-label">2024年</div>
+                    <div class="x-axis-label">2025年</div>
+                    <div class="x-axis-label">2026年<br>（预测）</div>
+                </div>
+                <div class="chart-source-note">
+                    2023年：截至当年已超过2亿人；柱高以2.0亿人为下限展示。<br>
+                    2024—2025年为报告数据，2026年为报告预测。<br>
+                    数据来源：<a href="https://www.drc.gov.cn/DocViewH5.aspx?chnid=379&amp;docid=2908439&amp;leafid=1338" target="_blank" rel="noopener noreferrer">国务院发展研究中心（2025）</a>；
+                    <a href="https://www.zaobao.com.sg/news/china/story20260607-9169767" target="_blank" rel="noopener noreferrer">《联合早报》对《2025中国蓝领群体就业研究报告》的报道（2026）</a>。
+                </div>
+            </div>
+
+            <div class="text-block-group editorial-section">
+                <p class="editorial-copy reveal-item">灵活就业，已成为不可忽视的就业现象。数字背后，是越来越多样化的就业选择，也是劳动者与市场需求之间正在发生的连接。</p>
+                <p class="reveal-item data-disclaimer-note">数据说明：2023年数据为国务院发展研究中心文章援引的国家统计局口径，公开表述为“超过2亿人”；2024—2025年数据及2026年预测来自《2025中国蓝领群体就业研究报告》的公开报道。图中2023年柱高仅按2.0亿人下限展示，不代表精确统计值。不同年份的统计来源、口径与推算方法可能存在差异，不宜将这些数值直接换算为统一口径的就业、失业指标。</p>
+            </div>
+
+            <section class="editorial-section reveal-item" aria-labelledby="supply-demand-title">
+                <div class="section-kicker">平台运行机制</div>
+                <h2 class="section-title" id="supply-demand-title">平台经济与供需关系</h2>
+                <div class="flow-strip" aria-label="消费需求到线下服务的流程">
+                    <div class="flow-step">消费需求</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">平台订单</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">线下履约</div>
+                </div>
+                <p class="editorial-copy">消费者产生需求，平台汇集并组织订单，商家与劳动者再通过备餐、取送、运输等环节完成服务。</p>
+                <p class="editorial-copy">订单连接的不只是消费与交易，也连接着具体的工作流程。市场需求影响订单的产生与分布，而平台规则、服务场景及劳动组织方式，则影响这些订单如何被完成。</p>
+                <p class="editorial-copy">订单数量的变化，并不必然等同于新增岗位数量的变化。要理解平台经济如何影响劳动，还需要进入具体的工作场景。</p>
+            </section>
+
+            <!-- Section 3 -->
+            <div class="reveal-item scroll-down-hint" role="button" tabindex="0" aria-label="向下翻页，继续阅读下一部分">
+                <span>↓ 向下滑动阅读</span>
+                <div class="arrow"></div>
+            </div>
+
+            <!-- 校园观察视频与正文 -->
+            <section class="editorial-section reveal-item" aria-labelledby="campus-section-title">
+                <div class="section-kicker">微观社会观察</div>
+                <h2 class="section-title" id="campus-section-title">当配送服务进入校园</h2>
+                <p class="editorial-copy">校园是观察平台服务进入具体生活场景的一个切口</p>
+                <p class="editorial-copy">传统堂食与线上点餐并存，食堂需要安排备餐与出餐，配送人员需要完成取餐与交付，学生则根据自己的需求选择就餐方式。</p>
+                <p class="editorial-copy">当校园出现专属配送队伍，变化便不再局限于点餐入口，也延伸到了订单如何流转、工作如何安排，以及不同群体如何适应这一服务模式。</p>
+            </section>
+
+            <h3 class="video-heading reveal-item">校园观察｜校园餐饮与配送服务</h3>
+            <div class="video-container-16-9 reveal-item">
+                <video poster="image/15.jpg" controls playsinline preload="metadata">
+                    <source src="video/video_01.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。
+                </video>
+            </div>
+
+            <p class="video-transcript reveal-item">食堂作为校园传统餐饮的核心载体，承载了师生的日常饮食需求。是校园生活不可或缺的重要场景，品类繁多的餐饮档口为师生们提供了丰富多样的饮食选择。传统的堂食模式依然是许多人最为熟悉与习惯的就餐方式。与此同时，校园餐饮服务的边界正在不断升级，校内专属配送队伍正在逐渐成型，两类配送在服务场景与运行模式上存在明显差异。贴合校园环境的配送服务也成为师生的重要选择之一。</p>
+
+            <section class="editorial-section reveal-item" aria-labelledby="campus-observation-title">
+                <h2 class="section-title" id="campus-observation-title">校园观察｜听听他们怎么看</h2>
+
+                <div class="quote-item">
+                    <div class="quote-role">配送员 A · 工作安排</div>
+                    <p class="quote-content">“比如说时间上，在学校送餐要更注意安全问题。”</p>
+                    <p class="quote-content" style="margin-top:0.5rem;">“这个要分时间段，在忙的时候，给的时间会长一点；再比如说那边的抄手和米线，它们那边的时间就会比较短；大众餐相对的时间就会更长一点。”</p>
+                </div>
+
+                <div class="quote-item">
+                    <div class="quote-role">配送员 B · 计酬方式</div>
+                    <p class="quote-content">“在外面是按照单量计算的，工资更高；学校里面就是固定工资，没有提成。”</p>
+                </div>
+
+                <div class="quote-item">
+                    <div class="quote-role">食堂职工 · 订单与出餐节奏</div>
+                    <p class="quote-content">“变化量大，比以前的生意更好一些。我们做生意的肯定是希望订单越多越好。”</p>
+                    <p class="quote-content" style="margin-top:0.5rem;">“还没有正式放学的时候是外卖会更多一些，但是到了下课之后来食堂的人多了，外卖的单子就顾不过来了。”</p>
+                </div>
+
+                <div class="quote-item">
+                    <div class="quote-role">学生 A · 就餐便利</div>
+                    <p class="quote-content">“而且下课之后就可以直接拿到也省去很多排队的时间。”</p>
+                </div>
+
+                <div class="quote-item">
+                    <div class="quote-role">学生 B · 服务选择</div>
+                    <p class="quote-content">“相比起校外的外卖，校园送他的餐品是食堂出品的，食品安全更有保障。”</p>
+                </div>
+            </section>
+
+            <section class="editorial-section reveal-item" aria-labelledby="digital-campus-title">
+                <div class="section-kicker">现象归纳</div>
+                <h2 class="section-title" id="digital-campus-title">校园餐饮数字化与劳动生态</h2>
+                <p class="editorial-copy">从点餐到备餐，从取餐到交付，线上订单把校园餐饮中原本分散的环节联系起来。</p>
+                <p class="editorial-copy">对于学生而言，变化体现在就餐方式和时间安排上；对于食堂职工，变化体现在订单分布与出餐节奏上；对于配送员，则体现在工作流程、服务规则与计酬方式上。</p>
+                <p class="editorial-copy">同一种服务进入不同群体的日常生活，也会呈现出不同的实际影响。</p>
+
+                <div class="closing-thought">
+                    <h3 class="video-heading" style="margin-top:0;">市场需求催生新的就业岗位</h3>
+                    <p class="editorial-copy">当线上餐饮需求需要持续的取送服务来完成，配送便成为连接消费与供给的具体劳动环节。校内配送队伍的形成，呈现了市场需求进入校园后，服务组织方式发生变化的一个具体案例。</p>
+                    <p class="editorial-copy">但岗位需求的增加，不意味着所有配送工作都采用相同的薪酬制度。受访配送员关于固定工资与按单计酬的比较，也体现了不同配送场景下的劳动组织存在差异。</p>
+                    <p class="editorial-copy">从一笔订单出发，我们看到的不只是就餐方式的变化，也包括消费需求、商家经营与配送劳动之间正在形成的联系。</p>
+                </div>
+            </section>
+
+            <button class="action-btn reveal-item" onclick="openInfoModal('modal-info-3')">
+                <span class="btn-icon"></span>
+                <span>查看资料来源与统计口径</span>
+            </button>
+
+            <!-- Section 4 Simulation -->
+            <div class="reveal-item scroll-down-hint" role="button" tabindex="0" aria-label="向下翻页，继续阅读下一部分">
+                <span>↓ 向下滑动阅读</span>
+                <div class="arrow"></div>
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item" style="font-weight:600; color:var(--text-primary);">先试着体验一次完整的配送过程。</p>
+            </div>
+
+            <!-- 点击触发最新交互模拟浮窗 -->
+            <button class="action-btn reveal-item" onclick="openInfoModal('modal-info-sim')">
+                <span class="btn-icon"></span>
+                <span>开始模拟</span>
+            </button>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item" style="color:var(--text-muted); font-size:0.9rem;">模拟结束。</p>
+                <p class="text-line reveal-item">在真实的工作中</p>
+                <p class="text-line reveal-item">这样的循环可能重复十几次、几十次。</p>
+                <p class="text-line reveal-item">但当最后一个订单完成</p>
+                <p class="text-line reveal-item">系统不再派单</p>
+                <p class="text-line reveal-item">骑手面对的是什么？</p>
+                <p class="text-line reveal-item">工作之外，他们的生活是什么样的？</p>
+            </div>
+
+            <!-- Section 5 Interview -->
+            <div class="reveal-item scroll-down-hint" role="button" tabindex="0" aria-label="向下翻页，继续阅读下一部分">
+                <span>↓ 向下滑动阅读</span>
+                <div class="arrow"></div>
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">我们访谈了一位外卖骑手。</p>
+                <p class="text-line reveal-item" style="color:var(--text-muted); font-size:0.88rem;">（以下内容根据真实观察与访谈整理，做匿名处理）</p>
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">他每天的工作从早上开始，到晚上结束。</p>
+                <p class="text-line reveal-item">中间的时间被一单单分割。</p>
+                <p class="text-line reveal-item">问他如何看待这份工作</p>
+                <p class="text-line reveal-item">他说：“能挣钱，时间相对自由，但很累。”</p>
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">订单之外的生活</p>
+                <p class="text-line reveal-item">他提到最多的是休息和家庭。</p>
+                <p class="text-line reveal-item">有时候送完单会在路边坐一会儿</p>
+                <p class="text-line reveal-item">有时候直接回家。</p>
+                <p class="text-line reveal-item">家人知道他在跑外卖</p>
+                <p class="text-line reveal-item">但很少细问每天具体发生了什么。</p>
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">他谈到过对未来的想法：</p>
+                <p class="text-line reveal-item">“先干着，看看以后有没有别的机会。”</p>
+                <p class="text-line reveal-item">也谈到过身体的感受：</p>
+                <p class="text-line reveal-item">“腿和腰会酸，雨天和高温天更明显。”</p>
+                <p class="text-line reveal-item">这些内容没有出现在任何订单数据里。</p>
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">这是他订单之外的日常片段。</p>
+                <p class="text-line reveal-item">简单、具体，也不完整。</p>
+                <p class="text-line reveal-item">但它属于这个人，而不属于系统。</p>
+            </div>
+
+            <!-- Section 6 Reflection -->
+            <div class="reveal-item scroll-down-hint" role="button" tabindex="0" aria-label="向下翻页，继续阅读下一部分">
+                <span>↓ 向下滑动阅读</span>
+                <div class="arrow"></div>
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">一个人的经历</p>
+                <p class="text-line reveal-item">是这个群体的一部分。</p>
+                <p class="text-line reveal-item">外卖骑手的数量庞大</p>
+                <p class="text-line reveal-item">他们的工作状态、收入结构、保障情况</p>
+                <p class="text-line reveal-item">已经引起持续关注。</p>
+                <p class="text-line reveal-item">公开研究和调查显示</p>
+                <p class="text-line reveal-item">灵活就业收入多数与订单量挂钩</p>
+                <p class="text-line reveal-item">社会保险参与率相对较低</p>
+                <p class="text-line reveal-item">劳动关系认定仍存在模糊地带。</p>
+                <p class="text-line reveal-item">这些问题不只出现在某一个骑手身上。</p>
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">订单记录的是效率与完成度</p>
+                <p class="text-line reveal-item">很少记录：休息是否充足</p>
+                <p class="text-line reveal-item">家庭如何安排</p>
+                <p class="text-line reveal-item">对未来有没有规划</p>
+                <p class="text-line reveal-item">身体是否长期透支。</p>
+                <p class="text-line reveal-item">这些被数据遮住的部分</p>
+                <p class="text-line reveal-item">正是“订单之外”想要呈现的内容。</p>
+                <p class="text-line reveal-item">从个人观察走向群体</p>
+                <p class="text-line reveal-item">不是为了得出统一结论</p>
+                <p class="text-line reveal-item">而是让更多人看见：</p>
+                <p class="text-line reveal-item">在平台经济的日常运转里</p>
+                <p class="text-line reveal-item">还有另一层真实存在的生活。</p>
+            </div>
+
+            <!-- Section 7 Ending -->
+            <div class="reveal-item scroll-down-hint" role="button" tabindex="0" aria-label="向下翻页，继续阅读下一部分">
+                <span>↓ 向下滑动阅读</span>
+                <div class="arrow"></div>
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">灵活就业有它的现实基础：</p>
+                <p class="text-line reveal-item">门槛相对较低，时间相对灵活，能带来即时收入。</p>
+                <p class="text-line reveal-item">同时，许多骑手也表达过类似的期待：</p>
+                <p class="text-line reveal-item">收入更稳定一些</p>
+                <p class="text-line reveal-item">保障更明确一些</p>
+                <p class="text-line reveal-item">对劳动过程的规则能更透明一些。</p>
+                <p class="text-line reveal-item">没有这三条</p>
+                <p class="text-line reveal-item">那就不是福利</p>
+                <p class="text-line reveal-item">而是对现实困境的无奈妥协。</p>
+            </div>
+
+            <div class="text-block-group">
+                <p class="text-line reveal-item">这不是一份解决方案</p>
+                <p class="text-line reveal-item">只是一次观察记录。</p>
+                <p class="text-line reveal-item">新就业形态仍在发生</p>
+                <p class="text-line reveal-item">外卖骑手仍在城市的道路上继续工作。</p>
+                <p class="text-line reveal-item">订单会结束</p>
+                <p class="text-line reveal-item">但订单之外的生活还在继续</p>
+            </div>
+
+            <button class="action-btn reveal-item" style="background: var(--accent-yellow); color:#111827; --mt: 2rem;" onclick="openModal()">
+                <span class="btn-icon" style="background:#111827;"></span>
+                <span>留下你的观察</span>
+            </button>
+
+        </main>
+    </div>
+
+    <!-- 资料来源与统计口径浮窗 -->
+    <div id="modal-info-3" class="standalone-modal-overlay" onclick="closeModalOnBg(event, 'modal-info-3')">
+        <div class="modal-popup-card">
+            <div class="modal-popup-header">
+                <div class="modal-popup-title">资料来源与统计口径</div>
+                <button class="modal-close-icon" onclick="closeInfoModal('modal-info-3')" aria-label="关闭">×</button>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">
+                    <strong>01｜平台公开数据</strong><br>
+                    《美团2023企业社会责任报告》提及，2023年通过美团平台获得收入的骑手约745万人。该口径反映年度通过平台获得收入的骑手人数，不等同于全职人数或新增岗位数。<br>
+                    <a class="source-link" href="https://media-meituan.todayir.com/20240617113637331835377_tc.pdf" target="_blank" rel="noopener noreferrer">查看报告原文 ↗</a>
+                </div>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">
+                    <strong>02｜灵活就业规模研究</strong><br>
+                    中国新就业形态研究中心《2025中国蓝领群体就业研究报告》估算，2025年中国灵活就业从业人员约2.8亿人，并预测2026年达到3.2亿人。上述数值为研究报告估算与预测，不宜直接等同于国家统计部门的就业、失业指标。<br>
+                    <a class="source-link" href="https://www.caixin.com/2026-06-10/102452669.html" target="_blank" rel="noopener noreferrer">查看相关报道 ↗</a>
+                </div>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">
+                    <strong>03｜媒体评论与行业观察</strong><br>
+                    《环球时报》社评《灵活就业＝间歇性失业吗？》讨论灵活就业的统计口径、就业方式及其与失业的区别。该文属于媒体评论，可作为理解现象的补充材料，不应与统计报告混为一谈。<br>
+                    <a class="source-link" href="https://opinion.huanqiu.com/article/6Z7yX7l6k8H" target="_blank" rel="noopener noreferrer">阅读原文 ↗</a>
+                </div>
+            </div>
+            <div class="info-card-item">
+                <div class="info-card-item-text">
+                    <strong>04｜校园实地观察</strong><br>
+                    本项目采访学生、食堂职工与校内配送员，记录特定校园场景下的订单变化、配送安排与就餐体验。这些材料属于项目的一手观察，能够呈现个案情况，但不能单独代表所有高校或所有配送人员。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         【全新修改】配送过程模拟 交互浮窗 (全滑动拖拽+倒序图片+第一人称文案)
+         ========================================================= -->
+    <div id="modal-info-sim" class="standalone-modal-overlay" onclick="closeModalOnBg(event, 'modal-info-sim')">
+        <div class="modal-popup-card">
+            <div class="modal-popup-header">
+                <div class="modal-popup-title">骑手一日配送体验</div>
+                <button class="modal-close-icon" onclick="closeInfoModal('modal-info-sim')">×</button>
+            </div>
+            
+            <!-- 轮播交互组件 -->
+            <div class="sim-carousel-wrapper" id="simCarousel">
+                <div class="sim-carousel-track" id="simTrack">
+                    <!-- 步骤 1: 倒序 22.jpeg -->
+                    <div class="sim-slide">
+                        <div class="sim-image-box">
+                            <img src="image/22.jpeg" alt="接到订单">
+                        </div>
+                        <div class="sim-text-card">
+                            <span class="sim-step-tag">步骤 1/4 · 叮！接到新订单</span>
+                            <p class="sim-step-quote">“手机突然响起熟悉的派单音！系统显示是一份急单：3公里内必须送达。我立马扣紧头盔锁扣，熟练地启动电瓶车，开启了这一单的倒计时竞争。”</p>
+                        </div>
+                    </div>
+
+                    <!-- 步骤 2: 倒序 21.jpeg -->
+                    <div class="sim-slide">
+                        <div class="sim-image-box">
+                            <img src="image/21.jpeg" alt="到达商家取餐">
+                        </div>
+                        <div class="sim-text-card">
+                            <span class="sim-step-tag">步骤 2/4 · 赶往商家取餐</span>
+                            <p class="sim-step-quote">“一路小跑冲进餐馆后厨，出餐口早已排满了等待的同行。我一边核对小票上的餐品清单，一边礼貌地提醒商家出餐快一点，拿上热腾腾的饭菜火速放入保温箱。”</p>
+                        </div>
+                    </div>
+
+                    <!-- 步骤 3: 倒序 20.jpeg -->
+                    <div class="sim-slide">
+                        <div class="sim-image-box">
+                            <img src="image/20.jpeg" alt="紧张配送中">
+                        </div>
+                        <div class="sim-text-card">
+                            <span class="sim-step-tag">步骤 3/4 · 穿越车流配送中</span>
+                            <p class="sim-step-quote">“雨天路滑，导航上的剩余红字时间还在不断减少。我必须在遵守交通规则的同时，穿过拥堵的十字路口和迷宫般的居民区巷道，眼神不敢有丝毫松懈。”</p>
+                        </div>
+                    </div>
+
+                    <!-- 步骤 4: 倒序 19.jpeg -->
+                    <div class="sim-slide">
+                        <div class="sim-image-box">
+                            <img src="image/19.jpeg" alt="顺利送达目标">
+                        </div>
+                        <div class="sim-text-card">
+                            <span class="sim-step-tag">步骤 4/4 · 顺利无接触交付</span>
+                            <p class="sim-step-quote">“一口气爬上五楼，敲开门双手递上餐盒并道一声‘祝您用餐愉快’。当系统弹出‘订单已送达’的绿色提示时，紧绷的神经终于能松一口气，等待下一单的到来。”</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 底部交互控制栏：两侧圆形箭头按钮 + 中央指示点 -->
+                <div class="sim-controls-bar">
+                    <button class="sim-arrow-btn" id="simPrevBtn" onclick="moveSimSlide(-1)" aria-label="上一页">&lt;</button>
+                    <div class="sim-dots-container" id="simDots">
+                        <div class="sim-dot active"></div>
+                        <div class="sim-dot"></div>
+                        <div class="sim-dot"></div>
+                        <div class="sim-dot"></div>
+                    </div>
+                    <button class="sim-arrow-btn" id="simNextBtn" onclick="moveSimSlide(1)" aria-label="下一页">&gt;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Feedback/Observation Form -->
+    <div id="feedbackModal" class="modal-overlay" onclick="closeModalOnBg(event, 'feedbackModal')">
+        <div class="modal-card">
+            <h3 class="modal-title">留下你的观察与感受</h3>
+            <textarea class="modal-textarea" placeholder="关于外卖骑手或新就业形态，你想表达什么..."></textarea>
+            <button class="modal-submit" onclick="submitObservation()">提交观察</button>
+        </div>
+    </div>
+
+    <script>
+        // 职业资料：头像顺序固定为司机 → 骑手 → 分拣员；循环逻辑仅由索引决定。
+        const occupationProfiles = [
+            {
+                name: '网约车司机',
+                title: '网约车司机观察',
+                image: 'image/dri.png',
+                lead: '接收出行需求，完成接驾与运输。',
+                copy: '一趟行程需要经过接单、接驾、行驶与送达。订单需求、道路状况和平台规则，共同影响着司机的工作节奏。'
+            },
+            {
+                name: '外卖骑手',
+                title: '外卖骑手观察',
+                image: 'image/dil.png',
+                lead: '从商家取餐，再将餐食送到指定地点。',
+                copy: '接单、取餐、配送，看似简单的流程，需要协调等餐时间、行驶路线与交付地点。午晚餐高峰，也往往意味着更集中的配送需求。'
+            },
+            {
+                name: '快递分拣员',
+                title: '快递分拣员观察',
+                image: 'image/pac.png',
+                lead: '在仓库或分拨中心，完成包裹的扫描、分类与转运。',
+                copy: '一个包裹在抵达收件人手中之前，需要经过多个物流环节。分拣作业连接着包裹的集中处理与后续运输，也有自己的作业流程和时间安排。'
+            }
+        ];
+
+        let currentOccupationIndex = 0;
+        let displayedOccupationIndex = 0;
+        let occupationExitTimer = null;
+        let occupationCardTimer = null;
+        let occupationSwipeStart = null;
+        let occupationSuppressClick = false;
+        let occupationSuppressClickTimer = null;
+        let occupationInitialMotionPlayed = false;
+        let occupationTransitionToken = 0;
+
+        function oppositeSide(side) {
+            return side === 'left' ? 'right' : 'left';
+        }
+
+        function getOccupationDirection(fromIndex, toIndex) {
+            const total = occupationProfiles.length;
+            const forward = (toIndex - fromIndex + total) % total;
+            const backward = (fromIndex - toIndex + total) % total;
+            // 距离相同则优先沿固定顺序向前：司机 → 骑手 → 分拣员 → 司机。
+            return forward <= backward ? 1 : -1;
+        }
+
+        function setOccupationSelection(index) {
+            document.querySelectorAll('.circle-avatar-item[data-occupation]').forEach((button) => {
+                const selected = Number(button.dataset.occupation) === index;
+                button.classList.toggle('is-selected', selected);
+                button.classList.toggle('is-muted', !selected);
+                button.setAttribute('aria-pressed', String(selected));
+            });
+        }
+
+        function renderOccupationContent(index) {
+            const profile = occupationProfiles[index];
+            const image = document.getElementById('occupation-detail-image');
+            const kicker = document.getElementById('occupation-detail-kicker');
+            const number = document.getElementById('occupation-detail-index');
+            const title = document.getElementById('occupation-detail-title');
+            const lead = document.getElementById('occupation-detail-lead');
+            const copy = document.getElementById('occupation-detail-copy');
+            if (!profile || !image || !title || !lead || !copy) return;
+
+            image.src = profile.image;
+            image.alt = profile.name + '职业观察插图';
+            if (kicker) kicker.textContent = '职业观察 / ' + String(index + 1).padStart(2, '0');
+            if (number) number.textContent = String(index + 1).padStart(2, '0') + ' — 03';
+            title.textContent = profile.title;
+            lead.textContent = profile.lead;
+            copy.textContent = profile.copy;
+        }
+
+        function clearOccupationMotionTimers() {
+            if (occupationExitTimer !== null) clearTimeout(occupationExitTimer);
+            if (occupationCardTimer !== null) clearTimeout(occupationCardTimer);
+            occupationExitTimer = null;
+            occupationCardTimer = null;
+        }
+
+        function resetOccupationMotionClasses(element) {
+            if (!element) return;
+            element.classList.remove(
+                'is-staged', 'is-entering', 'is-leaving',
+                'enter-left', 'enter-right', 'exit-left', 'exit-right',
+                'initial-down', 'switch-up', 'exit-down'
+            );
+        }
+
+        function animateOccupationEntry(index, isInitial = false, direction = 1, token = occupationTransitionToken) {
+            const image = document.getElementById('occupation-detail-image');
+            const card = document.getElementById('occupation-detail-card');
+            if (!image || !card) return;
+
+            // direction=+1：旧图向左退场、新图从右入场；direction=-1 则反之。
+            const imageSide = direction > 0 ? 'right' : 'left';
+            resetOccupationMotionClasses(image);
+            resetOccupationMotionClasses(card);
+
+            image.classList.add('is-staged', 'enter-' + imageSide);
+            card.classList.add('is-staged', isInitial ? 'initial-down' : 'enter-' + imageSide);
+            void image.offsetWidth;
+            requestAnimationFrame(() => {
+                if (currentOccupationIndex !== index || token !== occupationTransitionToken) return;
+                image.classList.remove('is-staged');
+                image.classList.add('is-entering');
+            });
+
+            // 文字卡片独立延迟入场；切换时保持原约定的向上缩放进入。
+            occupationCardTimer = setTimeout(() => {
+                if (currentOccupationIndex !== index || token !== occupationTransitionToken) return;
+                card.classList.remove('is-staged');
+                card.classList.add('is-entering');
+            }, 680);
+        }
+
+        function playInitialOccupationEntry() {
+            if (occupationInitialMotionPlayed) return;
+            const stage = document.getElementById('occupation-detail-stage');
+            if (!stage || !stage.classList.contains('visible')) return;
+            occupationInitialMotionPlayed = true;
+            setOccupationSelection(currentOccupationIndex);
+            renderOccupationContent(currentOccupationIndex);
+            animateOccupationEntry(currentOccupationIndex, true, -1, occupationTransitionToken);
+        }
+
+        function selectOccupation(index) {
+            if (occupationSuppressClick) return;
+            switchOccupation(index, null);
+        }
+
+        function switchOccupation(index, requestedDirection = null) {
+            const total = occupationProfiles.length;
+            const nextIndex = ((index % total) + total) % total;
+            const stage = document.getElementById('occupation-detail-stage');
+            const image = document.getElementById('occupation-detail-image');
+            const card = document.getElementById('occupation-detail-card');
+            if (!stage || !image || !card || nextIndex === currentOccupationIndex) return;
+
+            const previousIndex = displayedOccupationIndex;
+            const direction = requestedDirection === 1 || requestedDirection === -1
+                ? requestedDirection
+                : getOccupationDirection(previousIndex, nextIndex);
+            clearOccupationMotionTimers();
+            occupationTransitionToken += 1;
+            const token = occupationTransitionToken;
+            const stageIsVisible = stage.classList.contains('visible');
+            currentOccupationIndex = nextIndex;
+            setOccupationSelection(nextIndex);
+
+            // 若详情区尚未进入视口，只更新内容与待播放方向，不提前启动动画。
+            if (!stageIsVisible) {
+                displayedOccupationIndex = nextIndex;
+                renderOccupationContent(nextIndex);
+                resetOccupationMotionClasses(image);
+                resetOccupationMotionClasses(card);
+                image.classList.add('is-staged', 'enter-' + (direction > 0 ? 'right' : 'left'));
+                card.classList.add('is-staged', 'enter-' + (direction > 0 ? 'right' : 'left'));
+                return;
+            }
+
+            const exitSide = direction > 0 ? 'left' : 'right';
+            resetOccupationMotionClasses(image);
+            resetOccupationMotionClasses(card);
+            image.classList.add('is-leaving', 'exit-' + exitSide);
+            card.classList.add('is-leaving', 'exit-' + exitSide);
+
+            occupationExitTimer = setTimeout(() => {
+                if (currentOccupationIndex !== nextIndex || token !== occupationTransitionToken) return;
+                displayedOccupationIndex = nextIndex;
+                renderOccupationContent(nextIndex);
+                animateOccupationEntry(nextIndex, false, direction, token);
+            }, 290);
+        }
+
+        function initOccupationExplorer() {
+            const explorer = document.getElementById('occupation-explorer');
+            const stage = document.getElementById('occupation-detail-stage');
+            if (!explorer || !stage) return;
+
+            document.querySelectorAll('.circle-avatar-item[data-occupation]').forEach((button) => {
+                // 原生 button 已支持 Enter/空格，不额外绑定 keydown，避免键盘操作重复切换。
+                button.addEventListener('click', () => selectOccupation(Number(button.dataset.occupation)));
+            });
+
+            explorer.addEventListener('pointerdown', (event) => {
+                if (event.pointerType === 'mouse' && event.button !== 0) return;
+                occupationSwipeStart = { x: event.clientX, y: event.clientY, id: event.pointerId };
+            }, { passive: true });
+
+            explorer.addEventListener('pointerup', (event) => {
+                if (!occupationSwipeStart || occupationSwipeStart.id !== event.pointerId) return;
+                const dx = event.clientX - occupationSwipeStart.x;
+                const dy = event.clientY - occupationSwipeStart.y;
+                occupationSwipeStart = null;
+                if (Math.abs(dx) < 46 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
+
+                // 按用户定义的手指移动方向：向右（dx>0）进入右侧职业，向左（dx<0）进入左侧职业。
+                // 顺序为司机→骑手→分拣员，索引首尾循环。
+                const direction = dx > 0 ? 1 : -1;
+                const target = (currentOccupationIndex + direction + occupationProfiles.length) % occupationProfiles.length;
+                occupationSuppressClick = true;
+                if (occupationSuppressClickTimer !== null) clearTimeout(occupationSuppressClickTimer);
+                occupationSuppressClickTimer = setTimeout(() => { occupationSuppressClick = false; }, 360);
+                switchOccupation(target, direction);
+            }, { passive: true });
+
+            explorer.addEventListener('pointercancel', () => { occupationSwipeStart = null; }, { passive: true });
+
+            renderOccupationContent(currentOccupationIndex);
+            setOccupationSelection(currentOccupationIndex);
+        }
+
+        // =========================================================
+        // 阅读提示导航：恢复浏览器原生滚动，仅保留点击/键盘触发的平滑跳转。
+        // 不拦截 wheel、touchmove 或键盘滚动，不设置阅读边界锁。
+        // =========================================================
+        function startHintNavigation(target) {
+            if (!target) return;
+            // 为顶部固定进度条留出空间，避免目标内容被遮住。
+            const top = Math.max(0, window.scrollY + target.getBoundingClientRect().top - 48);
+            const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            window.scrollTo({ top, behavior: reduceMotion ? 'auto' : 'smooth' });
+        }
+
+        function navigateFromHint(hint) {
+            if (!hint || !hint.classList.contains('visible') || hint.getClientRects().length === 0) return;
+            const explicitTarget = hint.dataset.scrollTarget;
+            let target = explicitTarget ? document.getElementById(explicitTarget) : hint.nextElementSibling;
+            while (target && (target.classList.contains('scroll-down-hint') || target.offsetHeight === 0)) {
+                target = target.nextElementSibling;
+            }
+            if (target) startHintNavigation(target);
+        }
+
+        function initScrollHintNavigation() {
+            document.querySelectorAll('.scroll-down-hint').forEach((hint) => {
+                hint.addEventListener('click', () => navigateFromHint(hint));
+                hint.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        navigateFromHint(hint);
+                    }
+                });
+            });
+        }
+
+        // 兼容旧调用：回到正文起点。
+        function scrollToSection2() {
+            const section2 = document.getElementById('section-2');
+            if (section2) startHintNavigation(section2);
+        }
+
+        // 顶部阅读进度条：根据真实文档滚动比例更新，滑块中心点对应进度位置。
+        function initReadingProgress() {
+            const track = document.getElementById('reading-progress-track');
+            const fill = document.getElementById('reading-progress-fill');
+            const thumb = document.getElementById('reading-progress-thumb');
+            if (!track || !fill || !thumb) return;
+
+            let rafPending = false;
+            const update = () => {
+                rafPending = false;
+                const doc = document.documentElement;
+                const maxScroll = Math.max(0, doc.scrollHeight - window.innerHeight);
+                const ratio = maxScroll > 0 ? Math.max(0, Math.min(1, window.scrollY / maxScroll)) : 0;
+                const percent = ratio * 100;
+                fill.style.width = `${percent}%`;
+                thumb.style.left = `${percent}%`;
+                track.setAttribute('aria-valuenow', String(Math.round(percent)));
+            };
+            const scheduleUpdate = () => {
+                if (rafPending) return;
+                rafPending = true;
+                requestAnimationFrame(update);
+            };
+
+            window.addEventListener('scroll', scheduleUpdate, { passive: true });
+            window.addEventListener('resize', scheduleUpdate, { passive: true });
+            window.addEventListener('orientationchange', scheduleUpdate, { passive: true });
+            window.addEventListener('load', scheduleUpdate, { once: true });
+
+            // 图片、视频容器或字体加载改变文档高度时，重新计算真实阅读比例。
+            document.querySelectorAll('img, video').forEach((media) => {
+                media.addEventListener('load', scheduleUpdate, { passive: true });
+                media.addEventListener('loadedmetadata', scheduleUpdate, { passive: true });
+            });
+            if ('ResizeObserver' in window) {
+                const resizeObserver = new ResizeObserver(scheduleUpdate);
+                if (document.body) resizeObserver.observe(document.body);
+                const shell = document.querySelector('.h5-container');
+                if (shell) resizeObserver.observe(shell);
+            }
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(scheduleUpdate).catch(() => {});
+            }
+
+            update();
+        }
+
+        // 背景音乐：页面加载时尝试自动循环播放；若浏览器限制自动播放，则在用户首次交互时重试。
+        function initBackgroundMusic() {
+            const audio = document.getElementById('background-music');
+            const button = document.getElementById('music-toggle');
+            if (!audio || !button) return;
+
+            audio.loop = true;
+            audio.preload = 'auto';
+            audio.volume = 0.35;
+
+            let autoplayBlocked = false;
+
+            const syncUI = (playing, blocked = false) => {
+                button.classList.toggle('is-muted', !playing);
+                button.setAttribute('aria-pressed', String(playing));
+                button.setAttribute('aria-label', playing ? '关闭背景音乐' : '开启背景音乐');
+                button.title = playing
+                    ? '关闭背景音乐'
+                    : (blocked ? '浏览器限制自动播放，点击开启音乐' : '开启背景音乐');
+            };
+
+            const playAudio = () => {
+                const result = audio.play();
+
+                if (result && typeof result.then === 'function') {
+                    result.then(() => {
+                        autoplayBlocked = false;
+                        syncUI(true);
+                    }).catch(() => {
+                        autoplayBlocked = true;
+                        syncUI(false, true);
+                    });
+                } else {
+                    autoplayBlocked = audio.paused;
+                    syncUI(!audio.paused, autoplayBlocked);
+                }
+            };
+
+            const retryOnInteraction = (event) => {
+                // 点击音乐按钮时交由按钮自己的点击事件处理，避免刚开始播放又被暂停。
+                if (event.target.closest && event.target.closest('#music-toggle')) return;
+
+                if (autoplayBlocked && audio.paused) {
+                    playAudio();
+                }
+
+                document.removeEventListener('pointerdown', retryOnInteraction);
+                document.removeEventListener('keydown', retryOnInteraction);
+            };
+
+            button.addEventListener('click', () => {
+                if (!audio.paused && !audio.ended) {
+                    audio.pause();
+                    syncUI(false);
+                    return;
+                }
+
+                playAudio();
+            });
+
+            audio.addEventListener('play', () => {
+                autoplayBlocked = false;
+                syncUI(true);
+            });
+
+            audio.addEventListener('pause', () => syncUI(false));
+            audio.addEventListener('ended', () => syncUI(false));
+
+            // 页面加载后立即尝试播放；失败时等待用户交互后重试。
+            playAudio();
+
+            document.addEventListener('pointerdown', retryOnInteraction);
+            document.addEventListener('keydown', retryOnInteraction);
+        }
+
+        // 1. Intersection Observer for Scroll Animations & Chart Trigger
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px 0px -12px 0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        if (entry.target.id === 'occupation-detail-stage') {
+                            playInitialOccupationEntry();
+                        }
+                    } else {
+                        // 完全离开视口后重置状态；返回时由 CSS transition 再次缓动入场。
+                        entry.target.classList.remove('visible');
+                    }
+                });
+            }, observerOptions);
+
+            const revealElements = document.querySelectorAll('.reveal-item');
+            revealElements.forEach(el => observer.observe(el));
+
+            // 初始化职业详情、提示按钮导航、顶部阅读进度与配送模拟轮播
+            initOccupationExplorer();
+            initScrollHintNavigation();
+            initReadingProgress();
+            initBackgroundMusic();
+            initSimCarousel();
+        });
+
+        // 2. 独立全屏模态浮窗 控制逻辑
+        function openInfoModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+                document.body.classList.add('modal-open');
+            }
+        }
+
+        function closeInfoModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.classList.remove('modal-open');
+            }
+        }
+
+        function closeModalOnBg(e, modalId) {
+            if (e.target.classList.contains('standalone-modal-overlay') || e.target.classList.contains('modal-overlay')) {
+                closeInfoModal(modalId);
+            }
+        }
+
+        function openModal() {
+            openInfoModal('feedbackModal');
+        }
+
+        function submitObservation() {
+            alert('感谢你的思考与留下观察记录！');
+            closeInfoModal('feedbackModal');
+        }
+
+        // =========================================================
+        // 【全新轮播交互逻辑】支持鼠标拖拽、触摸滑动与左右箭头点击
+        // =========================================================
+        let currentSimIndex = 0;
+        const totalSimSlides = 4;
+
+        function updateSimCarousel() {
+            const track = document.getElementById('simTrack');
+            const dots = document.querySelectorAll('#simDots .sim-dot');
+            const prevBtn = document.getElementById('simPrevBtn');
+            const nextBtn = document.getElementById('simNextBtn');
+
+            if (track) {
+                track.style.transform = `translateX(-${currentSimIndex * 100}%)`;
+            }
+
+            // 更新指示点
+            dots.forEach((dot, idx) => {
+                if (idx === currentSimIndex) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+
+            // 控制左右箭头状态
+            if (prevBtn) prevBtn.disabled = (currentSimIndex === 0);
+            if (nextBtn) nextBtn.disabled = (currentSimIndex === totalSimSlides - 1);
+        }
+
+        function moveSimSlide(direction) {
+            currentSimIndex += direction;
+            if (currentSimIndex < 0) currentSimIndex = 0;
+            if (currentSimIndex >= totalSimSlides) currentSimIndex = totalSimSlides - 1;
+            updateSimCarousel();
+        }
+
+        // 滑拽手势绑定
+        function initSimCarousel() {
+            const wrapper = document.getElementById('simCarousel');
+            if (!wrapper) return;
+
+            let startX = 0;
+            let currentX = 0;
+            let isDragging = false;
+
+            // 触摸事件
+            wrapper.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                isDragging = true;
+            }, { passive: true });
+
+            wrapper.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                currentX = e.touches[0].clientX;
+            }, { passive: true });
+
+            wrapper.addEventListener('touchend', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                handleSwipeGesture(startX, currentX);
+            });
+
+            // 鼠标拖拽事件 (桌面端兼容)
+            wrapper.addEventListener('mousedown', (e) => {
+                startX = e.clientX;
+                isDragging = true;
+            });
+
+            wrapper.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                currentX = e.clientX;
+            });
+
+            wrapper.addEventListener('mouseup', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                handleSwipeGesture(startX, currentX);
+            });
+
+            wrapper.addEventListener('mouseleave', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    handleSwipeGesture(startX, currentX);
+                }
+            });
+
+            updateSimCarousel();
+        }
+
+        function handleSwipeGesture(start, end) {
+            const diffX = start - end;
+            // 触发滑动的最小阈值 35px
+            if (Math.abs(diffX) > 35 && end !== 0) {
+                if (diffX > 0) {
+                    // 向左滑动 -> 下一页
+                    moveSimSlide(1);
+                } else {
+                    // 向右滑动 -> 上一页
+                    moveSimSlide(-1);
+                }
+            }
+        }
+    </script>
 </body>
 </html>
